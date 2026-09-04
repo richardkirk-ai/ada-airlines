@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<base href="/rkirk-easyjet-rebooking/">
 <title>easyJet — Channels</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -643,11 +642,11 @@
 </div>
 
 <nav class="site-tabs" aria-label="Demo channels">
-  <a href="app.html">App</a>
-  <a href="index.html">Web</a>
-  <a href="voice.html">Voice</a>
-  <a href="channels.html" class="on">Channels</a>
-  <a href="mcp.html">MCP</a>
+  <a href="https://richard-kirk.adacities.com/rkirk-easyjet-app">App</a>
+  <a href="https://richard-kirk.adacities.com/rkirk-easyjet-rebooking">Web</a>
+  <a href="https://richard-kirk.adacities.com/rkirk-easyjet-voice">Voice</a>
+  <a href="https://richard-kirk.adacities.com/rkirk-easyjet-channels" class="on">Channels</a>
+  <a href="https://richard-kirk.adacities.com/rkirk-easyjet-mcp">MCP</a>
 </nav>
 
 <script>
@@ -742,7 +741,7 @@
     var q=document.getElementById('wsInput').value.trim(); if(!q) return;
     var m=wsMatch(q);
     var rel=m.articles.map(function(a){
-      return "<a class='rel-item' href='index.html'><span class='ri-ic'>📄</span><span class='ri-t'><span class='ri-title'>"+a.t+"</span><span class='ri-cat'>"+a.c+" · easyJet Help</span></span><span class='ri-chev'>›</span></a>";
+      return "<a class='rel-item' href='https://richard-kirk.adacities.com/rkirk-easyjet-rebooking'><span class='ri-ic'>📄</span><span class='ri-t'><span class='ri-title'>"+a.t+"</span><span class='ri-cat'>"+a.c+" · easyJet Help</span></span><span class='ri-chev'>›</span></a>";
     }).join('');
     var r=document.getElementById('wsResult');
     r.innerHTML = "<div class='ans-card'><div class='ans-head'>✨ AI Answer <span class='live'>Ada · answered instantly</span></div><div class='ans-body' id='wsAns'></div></div><div class='rel'><div class='rel-h'>Related help articles</div>"+rel+"</div>";

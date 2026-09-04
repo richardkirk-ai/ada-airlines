@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>easyJet · Rebooking Assistant (Ada demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ej:#FF6600; --ej-dark:#E85D04; --ej-deep:#243746;
+    --page:#EBEEF2; --card:#FFFFFF; --ink:#16202A; --muted:#697586; --line:#E4E8EE;
+    --agent:#F1F3F6; --agent-ink:#1B2733; --user:#FF6600; --user-ink:#FFFFFF;
+    --green:#129E5E; --green-soft:#E7F6EE; --amber:#B77400; --amber-soft:#FDF3DF;
+    --shadow:0 18px 50px rgba(20,30,45,.20);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--page);color:var(--ink);overflow:hidden}
+  .wm{font-family:'Baloo 2',sans-serif}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* easyJet site backdrop */
+  #site{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
+  .nav{background:var(--ej);color:#fff;height:64px;display:flex;align-items:center;gap:28px;padding:0 34px;flex-shrink:0}
+  .brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.5px;color:#fff;line-height:1;user-select:none}
+  .nav .links{display:flex;gap:24px;margin-left:14px}
+  .nav .links a{color:#fff;text-decoration:none;font-weight:600;font-size:14.5px;opacity:.95}
+  .nav .spacer{flex:1}
+  .nav .util{display:flex;gap:18px;align-items:center;font-size:13.5px;font-weight:600;opacity:.95}
+  .subnav{background:#fff;border-bottom:1px solid var(--line);height:52px;display:flex;align-items:center;padding:0 34px;gap:26px;flex-shrink:0}
+  .subnav a{color:var(--ej-deep);text-decoration:none;font-weight:600;font-size:14px;opacity:.8}
+  .subnav a.on{color:var(--ej);opacity:1;box-shadow:inset 0 -3px 0 var(--ej);height:52px;display:flex;align-items:center}
+  .hero{flex:1;overflow:auto;padding:34px 34px 40px}
+  .crumb{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .crumb b{color:var(--ej-deep)}
+  .hero h1{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:34px;color:var(--ej-deep);letter-spacing:-.5px;max-width:760px}
+  .hero .lede{margin-top:12px;font-size:16px;color:#46525E;max-width:720px;line-height:1.55}
+  .hgrid{margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:940px}
+  .hcard{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 20px 22px}
+  .hcard .ic{width:40px;height:40px;border-radius:10px;background:#FFF1E6;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .hcard h3{margin-top:14px;font-size:15.5px;color:var(--ej-deep)}
+  .hcard p{margin-top:6px;font-size:13.5px;color:var(--muted);line-height:1.5}
+  .hbanner{margin-top:24px;max-width:940px;background:linear-gradient(90deg,#FFF3E9,#fff);border:1px solid #FFE0C4;border-radius:14px;padding:18px 22px;display:flex;gap:14px;align-items:center}
+  .hbanner .dot{width:10px;height:10px;border-radius:50%;background:var(--ej);flex-shrink:0;box-shadow:0 0 0 4px #FFE0C4}
+  .hbanner b{color:var(--ej-deep)}
+  .hbanner span{font-size:14px;color:#46525E}
+  /* Ada value boxes (reveal in sync with the conversation) */
+  .valuewrap{margin-top:26px;max-width:960px}
+  .valhead{font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ej);margin-bottom:14px;display:flex;align-items:center;gap:9px}
+  .valhead::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ej);box-shadow:0 0 0 4px #FFE0C4}
+  .valgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .valbox{display:none;flex-direction:column;justify-content:center;background:#fff;border:1px solid var(--line);border-left:3px solid var(--ej);border-radius:12px;padding:18px 17px 20px;min-height:104px}
+  .valbox.show{display:flex;animation:pop .4s ease both}
+  .valbox .vt{font-size:14px;font-weight:700;color:var(--ej-deep);display:flex;align-items:center;gap:8px;line-height:1.25}
+  .valbox .vt .vic{font-size:17px;flex-shrink:0}
+  .valbox .vd{font-size:12.7px;color:var(--muted);line-height:1.5;margin-top:8px}
+  @media (max-width:1180px){ .valgrid{grid-template-columns:repeat(2,1fr)} }
+
+  /* Ada chat widget */
+  #cw{position:fixed;right:26px;bottom:26px;width:396px;height:min(86vh,720px);background:var(--card);
+    border-radius:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;z-index:20;
+    opacity:0;transform:translateY(18px) scale(.98);transition:opacity .35s,transform .35s}
+  #cw.open{opacity:1;transform:none}
+  .cw-head{background:var(--ej);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:11px;flex-shrink:0}
+  .avatar{width:38px;height:38px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .avatar .e{font-family:'Baloo 2';font-weight:800;color:var(--ej);font-size:24px;line-height:1}
+  .cw-head .who{flex:1;min-width:0}
+  .cw-head .nm{font-weight:700;font-size:15px;display:flex;align-items:center;gap:7px}
+  .cw-head .nm .online{width:8px;height:8px;border-radius:50%;background:#8CF0B6;box-shadow:0 0 0 2px rgba(255,255,255,.35)}
+  .cw-head .sub{font-size:11.5px;opacity:.9;margin-top:1px}
+  .cw-head .x{opacity:.85;font-size:20px;cursor:default;padding:2px 4px}
+  .prog{height:3px;background:rgba(255,255,255,.28);flex-shrink:0}
+  .prog i{display:block;height:100%;width:0;background:#fff;transition:width .1s linear}
+
+  .thread{flex:1;overflow-y:auto;padding:16px 14px 8px;background:#FBFCFD;display:flex;flex-direction:column;gap:9px}
+  .thread>*{flex-shrink:0}
+  .row{display:none;gap:8px;align-items:flex-end;max-width:100%}
+  .row.show{display:flex;animation:pop .3s ease both}
+  .row.a{justify-content:flex-start}
+  .row.u{justify-content:flex-end}
+  .rav{width:26px;height:26px;border-radius:50%;background:var(--ej);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .rav .e{font-family:'Baloo 2';font-weight:800;color:#fff;font-size:15px;line-height:1}
+  .bubble{max-width:80%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word}
+  .a .bubble{background:var(--agent);color:var(--agent-ink);border-bottom-left-radius:5px}
+  .u .bubble{background:var(--user);color:var(--user-ink);border-bottom-right-radius:5px}
+
+  .typing{display:none;align-items:center;gap:8px}
+  .typing.show{display:flex;animation:pop .2s ease both}
+  .typing .tb{background:var(--agent);border-radius:16px;border-bottom-left-radius:5px;padding:12px 14px;display:flex;gap:4px}
+  .typing .tb i{width:7px;height:7px;border-radius:50%;background:#AEB8C4;animation:blink 1.2s infinite}
+  .typing .tb i:nth-child(2){animation-delay:.2s}.typing .tb i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+
+  .chips{display:none;flex-wrap:wrap;gap:7px;justify-content:flex-end;padding:2px 2px 2px 34px}
+  .chips.show{display:flex;animation:pop .3s ease both}
+  .chip{border:1.5px solid var(--ej);color:var(--ej);background:#fff;border-radius:20px;padding:7px 13px;font-size:13px;font-weight:600}
+  .chip.pick{background:var(--ej);color:#fff}
+  .chips.chose .chip:not(.sel){display:none}
+  .chips.chose .chip.sel{background:var(--ej);color:#fff}
+
+  .caro{display:none;padding:6px 0 4px 34px}
+  .caro.show{display:block;animation:pop .35s ease both}
+  .caro .track{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .caro .track::-webkit-scrollbar{height:6px}.caro .track::-webkit-scrollbar-thumb{background:#D6DEE7;border-radius:3px}
+  .fcard{flex:0 0 208px;scroll-snap-align:start;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:13px 14px 14px;transition:border-color .3s,box-shadow .3s,transform .3s;position:relative}
+  .fcard.sel{border-color:var(--ej);box-shadow:0 8px 22px rgba(255,102,0,.18)}
+  .fcard.dim{opacity:.5;filter:grayscale(.3)}
+  .fcard .tag{position:absolute;top:-9px;left:13px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px;letter-spacing:.02em;display:none}
+  .fcard.soon .tag{display:block}
+  .fcard .fn{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em}
+  .fcard .times{display:flex;align-items:center;gap:8px;margin-top:7px}
+  .fcard .t{font-family:'Baloo 2';font-weight:700;font-size:20px;color:var(--ej-deep);line-height:1}
+  .fcard .ap{font-size:11px;color:var(--muted);margin-top:2px}
+  .fcard .arrow{flex:1;height:1.5px;background:var(--line);position:relative}
+  .fcard .arrow::after{content:"\2708";position:absolute;right:-2px;top:-8px;font-size:11px;color:var(--ej)}
+  .fcard .meta{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+  .fcard .dur{font-size:11.5px;color:var(--muted)}
+  .fcard .fee{font-size:11.5px;font-weight:700;color:var(--green)}
+  .fcard .btn{margin-top:11px;width:100%;background:var(--ej);color:#fff;border:none;border-radius:9px;padding:8px;font-weight:700;font-size:13px;font-family:inherit}
+  .fcard.sel .btn{background:var(--green)}
+  .fcard.dim .btn{background:#C4CCD6}
+
+  .infocard{display:none;margin:2px 0 2px 34px;background:var(--amber-soft);border:1px solid #F1DCA8;border-radius:13px;padding:12px 14px}
+  .infocard.show{display:block;animation:pop .3s ease both}
+  .infocard .h{font-size:12px;font-weight:700;color:var(--amber);letter-spacing:.03em;display:flex;align-items:center;gap:6px}
+  .infocard p{font-size:12.7px;color:#5B5228;line-height:1.5;margin-top:5px}
+  .confirm{display:none;margin:2px 0 2px 34px;background:#fff;border:1.5px solid var(--green);border-radius:14px;overflow:hidden}
+  .confirm.show{display:block;animation:pop .3s ease both}
+  .confirm .top{background:var(--green-soft);padding:11px 14px;display:flex;align-items:center;gap:9px}
+  .confirm .top .ck{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800}
+  .confirm .top b{color:#0C6B41;font-size:14px}
+  .confirm .top .fn{margin-left:auto;font-family:'Baloo 2';font-weight:700;color:var(--ej-deep)}
+  .confirm .body{padding:12px 14px}
+  .confirm .route{display:flex;align-items:center;gap:10px}
+  .confirm .route .t{font-family:'Baloo 2';font-weight:700;font-size:19px;color:var(--ej-deep)}
+  .confirm .route .ap{font-size:11px;color:var(--muted)}
+  .confirm .route .ln{flex:1;height:1.5px;background:var(--line);position:relative}
+  .confirm .route .ln::after{content:"\2708";position:absolute;right:-2px;top:-8px;font-size:11px;color:var(--ej)}
+  .confirm .facts{margin-top:11px;display:flex;flex-wrap:wrap;gap:6px}
+  .confirm .facts span{font-size:11px;background:#F1F3F6;color:#46525E;padding:3px 9px;border-radius:20px;font-weight:600}
+  .confirm .sent{margin-top:10px;font-size:12px;color:var(--green);font-weight:600;display:flex;align-items:center;gap:6px}
+
+  .claim{display:none;margin:2px 0 2px 34px;background:#fff;border:1.5px solid var(--ej);border-radius:14px;overflow:hidden}
+  .claim.show{display:block;animation:pop .3s ease both}
+  .claim .ctop{background:#FFF1E6;padding:11px 14px;display:flex;align-items:center;gap:9px}
+  .claim .ctop .cic{font-size:17px}
+  .claim .ctop b{color:var(--ej-dark);font-size:14px}
+  .claim .ctop .cref{margin-left:auto;font-family:'Baloo 2';font-weight:700;color:var(--ej-deep);font-size:13px;letter-spacing:.02em}
+  .claim .cbody{padding:12px 14px}
+  .claim .cfacts{display:flex;flex-wrap:wrap;gap:6px}
+  .claim .cfacts span{font-size:11px;background:#F1F3F6;color:#46525E;padding:3px 9px;border-radius:20px;font-weight:600}
+  .claim .cline{font-size:12.5px;color:#46525E;line-height:1.5;margin-top:8px;padding-left:19px;position:relative}
+  .claim .cline::before{content:"\2713";position:absolute;left:0;top:0;color:var(--green);font-weight:800}
+  .claim .cstep{margin-top:11px;font-size:12.5px;font-weight:700;color:var(--ej-dark);background:#FFF7F0;border:1px dashed #F3C9A6;border-radius:9px;padding:8px 11px;display:flex;align-items:center;gap:7px}
+  .filechip{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:16px;border-bottom-right-radius:5px;padding:9px 13px;max-width:80%}
+  .filechip .fi{width:30px;height:30px;border-radius:8px;background:#FDECEC;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+  .filechip .ft{display:flex;flex-direction:column;line-height:1.2}
+  .filechip .ft b{font-size:13px;color:var(--ink)}
+  .filechip .ft i{font-size:11px;color:var(--muted);font-style:normal;margin-top:2px}
+
+  .composer{flex-shrink:0;border-top:1px solid var(--line);background:#fff;padding:9px 12px;display:flex;align-items:center;gap:9px}
+  .composer .fake{flex:1;background:#F1F3F6;border-radius:20px;padding:9px 14px;color:#9AA5B1;font-size:13.5px}
+  .composer .snd{width:34px;height:34px;border-radius:50%;background:var(--ej);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .powered{text-align:center;font-size:10.5px;color:#9AA5B1;padding:5px 0 8px;background:#fff;flex-shrink:0}
+  .powered b{color:#697586}
+
+  #ctl{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:12px;
+    background:var(--ej-deep);color:#fff;border-radius:40px;padding:9px 10px 9px 9px;box-shadow:var(--shadow)}
+  #ctl button{background:#fff;color:var(--ej-deep);border:none;width:40px;height:40px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  #ctl #next{width:auto;min-width:96px;padding:0 18px;border-radius:20px;font-weight:700;font-size:13px;font-family:inherit;gap:4px}
+  #ctl #next:disabled{opacity:.4;cursor:default}
+  #ctl .bar{width:180px;height:5px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden}
+  #ctl .bar i{display:block;height:100%;width:0;background:var(--ej);border-radius:3px}
+  #ctl .tt{font-size:12px;font-variant-numeric:tabular-nums;opacity:.9;min-width:78px;text-align:center}
+  #ctl .hint{font-size:11px;opacity:.6;padding-right:8px}
+  .launch{position:fixed;right:26px;bottom:26px;width:60px;height:60px;border-radius:50%;background:var(--ej);box-shadow:var(--shadow);
+    display:flex;align-items:center;justify-content:center;z-index:19;transition:opacity .3s}
+  .launch svg{width:28px;height:28px;fill:#fff}
+  .launch.hidden{opacity:0;pointer-events:none}
+
+  /* shared easyJet site tab-bar (App · Web · Voice · Channels · MCP) */
+  .site-tabs{position:fixed;left:18px;bottom:18px;z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10);font-family:'Inter',system-ui,sans-serif}
+  .site-tabs a{font-size:12.5px;font-weight:600;color:#6B5A50;text-decoration:none;padding:7px 14px;border-radius:999px;line-height:1;white-space:nowrap;transition:background .15s,color .15s}
+  .site-tabs a:hover{background:#FFF1E6;color:var(--ej-dark)}
+  .site-tabs a.on{background:var(--ej);color:#fff}
+  @media (max-width:720px){ .site-tabs{left:50%;transform:translateX(-50%);bottom:10px} .site-tabs a{padding:7px 11px} }
+</style>
+</head>
+<body>
+
+<nav class="site-tabs" aria-label="Demo channels">
+  <a href="app.html">App</a>
+  <a href="index.html" class="on">Web</a>
+  <a href="voice.html">Voice</a>
+  <a href="channels.html">Channels</a>
+  <a href="mcp.html">MCP</a>
+</nav>
+
+<div id="site">
+  <div class="nav">
+    <div class="brand wm">easyJet</div>
+    <div class="links">
+      <a href="#">Flights</a><a href="#">Hotels</a><a href="#">Cars</a><a href="#">Holidays</a><a href="#">Help</a>
+    </div>
+    <div class="spacer"></div>
+    <div class="util"><span>Manage bookings</span><span>Log in</span><span>&#127468;&#127463; EN &pound;</span></div>
+  </div>
+  <div class="subnav">
+    <a href="#">Help home</a>
+    <a href="#">Booking</a>
+    <a href="#">Baggage</a>
+    <a href="#" class="on">Delays &amp; cancellations</a>
+    <a href="#">At the airport</a>
+    <a href="#">Refunds</a>
+  </div>
+  <div class="hero">
+    <div class="crumb">Help &nbsp;&rsaquo;&nbsp; <b>Delays &amp; cancellations</b></div>
+    <h1>Flight delays and cancellations</h1>
+    <div class="lede">If your flight has been delayed or cancelled, we're here to help you get to your destination. Rebook, request a refund, or check your rights &mdash; our assistant can sort most things in a couple of minutes.</div>
+    <div class="hgrid">
+      <div class="hcard"><div class="ic">&#128257;</div><h3>Rebook your flight</h3><p>Move to the next available flight at no extra cost when we've cancelled yours.</p></div>
+      <div class="hcard"><div class="ic">&#128183;</div><h3>Refunds</h3><p>Request a full refund of your fare if you'd rather make your own arrangements.</p></div>
+      <div class="hcard"><div class="ic">&#9878;&#65039;</div><h3>Your rights (EU261)</h3><p>Understand when compensation and duty of care apply after a disruption.</p></div>
+    </div>
+    <div class="valuewrap">
+      <div class="valhead">How Ada is resolving this &mdash; live</div>
+      <div class="valgrid" id="valgrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="launch" id="launch"><svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.4 1.2 4.6 3.1 6.1-.1 1.2-.6 2.6-1.6 3.7 1.7-.2 3.4-.9 4.7-1.9 1.2.4 2.5.6 3.8.6 5.5 0 10-3.8 10-8.5S17.5 3 12 3z"/></svg></div>
+
+<div id="cw">
+  <div class="cw-head">
+    <div class="avatar"><span class="e">e</span></div>
+    <div class="who"><div class="nm">easyJet Assistant</div></div>
+    <div class="x">&#9662;</div>
+  </div>
+  <div class="prog"><i id="phead"></i></div>
+  <div class="thread" id="thread"></div>
+  <div class="composer"><div class="fake">Type your message&hellip;</div><div class="snd">&#10148;</div></div>
+  <div class="powered">Powered by <b>Ada</b></div>
+</div>
+
+<div id="ctl">
+  <button id="restart" title="Start over">&#8635;</button>
+  <div class="bar"><i id="pbar"></i></div>
+  <button id="next">Next &#9654;</button>
+  <span class="hint">or click the chat</span>
+</div>
+
+<script>
+(function(){
+  // Each entry is one "beat" of the conversation, revealed on click (no auto-play).
+  var EV = [
+    {k:'ai', text:"Hi Richard 👋 I'm easyJet's assistant. I can see your flight to Barcelona today (EZY8021) has been cancelled — I'm really sorry. Are you messaging about this flight?"},
+    {k:'u',  text:"Yes — I need to get to Barcelona today, I'm best man at a wedding tomorrow. Can you rebook me?"},
+    {k:'ai', text:"I'm really sorry, that sounds stressful with the wedding tomorrow. Your flight was cancelled because of an air traffic control strike affecting French airspace today — that's outside easyJet's control, though I know it doesn't make it any less frustrating. Let me sort out your options."},
+    {k:'ai', text:"I'll find the fastest way to get you there. You have three options:\n\n🔁  Rebook onto the next available flight — no extra cost\n💷  A full refund, if you'd rather make your own arrangements\n✈️  Reroute via a different airline, if it's sooner"},
+    {k:'chips'},
+    {k:'pick'},
+    {k:'ai', text:"Great choice. Here are the two best options to get you to Barcelona today 👇"},
+    {k:'carousel'},
+    {k:'u',  text:"The 18:10 from Gatwick, please — that's the soonest and I can still make the rehearsal dinner tonight.", selflight:true},
+    {k:'ai', text:"Perfect. One quick heads-up on compensation before I confirm 👇"},
+    {k:'eu261'},
+    {k:'ai', text:"You're all set! ✅ I've rebooked you — here are your new flight details:"},
+    {k:'confirm'},
+    {k:'ai', text:"Your new confirmation and boarding pass are on their way to your email now. Congratulations on the wedding 🎉 — is there anything else I can help with?"},
+    {k:'u',  text:"Actually, yes — I'd pre-paid €38 for the train from Barcelona airport into the city tonight, and with the later flight I'll now miss it. Anything I can do?"},
+    {k:'ai', text:"Ah, sorry about that. Good news though — because the delay was on our side, you can claim the cost of that train back as an expense. The strike only rules out cash compensation; it doesn't affect this. Let me set it up for you."},
+    {k:'ai', text:"Done ✅ I've opened an expenses claim and pre-filled it with your booking and flight, so there's nothing for you to re-enter:"},
+    {k:'claim'},
+    {k:'ai', text:"Last thing — just add your train receipt. Attach it right here, or use the link I've emailed you whenever it's handy."},
+    {k:'attach'},
+    {k:'ai', text:"Got it — receipt attached ✅ You'll see the refund on the card you booked with within about 7 days, and I've emailed you a copy. Anything else?"},
+    {k:'u',  text:"No, that's everything — thank you so much!"},
+    {k:'ai', text:"You're very welcome. Have a fantastic time as best man, and safe travels ✈️"},
+  ];
+
+  // Ada value boxes — each reveals once its trigger beat (b) has been reached.
+  var VALUES = [
+    {b:0,  ic:'📡', title:'Proactive & context-aware', text:'Ada reaches out first — already knowing the flight and that it was cancelled.'},
+    {b:1,  ic:'🎯', title:'Understands intent', text:'Grasps that the customer must reach Barcelona today, and why it matters.'},
+    {b:2,  ic:'💛', title:'Acts with empathy', text:'Responds with genuine warmth — not a scripted apology.'},
+    {b:2,  ic:'💍', title:'Acknowledges the trip', text:'References the wedding and the urgency of arriving in time.'},
+    {b:3,  ic:'🔀', title:'Offers real choices', text:'Presents rebook, refund and reroute — the customer stays in control.'},
+    {b:7,  ic:'🗂️', title:'Live flight catalogue', text:'Surfaces genuine alternative flights and lets the customer pick.'},
+    {b:10, ic:'⚖️', title:'Accurate on rights', text:'Explains EU261 correctly — honest about compensation, no over-promising.'},
+    {b:12, ic:'✅', title:'Resolves end-to-end', text:'Rebooks the flight and sends the new boarding pass — no human needed.'},
+    {b:15, ic:'🧾', title:'Handles third-party expenses', text:'Opens and pre-fills a reasonable-expenses claim for the missed train — no forms, no re-typing.'},
+  ];
+
+  var thread = document.getElementById('thread');
+  var cw = document.getElementById('cw');
+  var launch = document.getElementById('launch');
+  var pbar = document.getElementById('pbar');
+  var phead = document.getElementById('phead');
+  var nextBtn = document.getElementById('next');
+  var restartBtn = document.getElementById('restart');
+
+  var chipsNode=null, caroNode=null;
+  var pickIndex=-1, flightChoiceIndex=-1;
+
+  EV.forEach(function(e,i){
+    if(e.k==='ai'){
+      var ty=document.createElement('div'); ty.className='row a typing';
+      ty.innerHTML='<div class="rav"><span class="e">e</span></div><div class="tb"><i></i><i></i><i></i></div>';
+      thread.appendChild(ty); e._typing=ty;
+      var row=document.createElement('div'); row.className='row a';
+      row.innerHTML='<div class="rav"><span class="e">e</span></div><div class="bubble"></div>';
+      row.querySelector('.bubble').textContent=e.text;
+      thread.appendChild(row); e._node=row;
+    } else if(e.k==='u'){
+      var ru=document.createElement('div'); ru.className='row u';
+      ru.innerHTML='<div class="bubble"></div>';
+      ru.querySelector('.bubble').textContent=e.text;
+      thread.appendChild(ru); e._node=ru;
+      if(e.selflight) flightChoiceIndex=i;
+    } else if(e.k==='chips'){
+      var c=document.createElement('div'); c.className='chips';
+      c.innerHTML='<span class="chip sel">Rebook me</span><span class="chip">Full refund</span><span class="chip">Reroute</span>';
+      thread.appendChild(c); e._node=c; chipsNode=c;
+    } else if(e.k==='pick'){
+      pickIndex=i; // state-only beat: collapses the chips to the chosen reply
+    } else if(e.k==='carousel'){
+      var c2=document.createElement('div'); c2.className='caro';
+      c2.innerHTML='<div class="track">'+
+        flightCard('luton','EZY3115','19:45','LTN','London Luton','22:55','BCN','Barcelona','2h 10m',false)+
+        flightCard('gatwick','EZY2981','18:10','LGW','London Gatwick','21:20','BCN','Barcelona','2h 10m',true)+
+        '</div>';
+      thread.appendChild(c2); e._node=c2; caroNode=c2;
+    } else if(e.k==='eu261'){
+      var c3=document.createElement('div'); c3.className='infocard';
+      c3.innerHTML='<div class="h">&#9432; EU261 · EXTRAORDINARY CIRCUMSTANCES</div><p>Because this cancellation is caused by an air traffic control strike — outside the airline’s control — <b>no cash compensation</b> applies under EU261. Your <b>free rebooking</b> stands, and <b>duty of care</b> (meals / overnight accommodation) is covered if you need it.</p>';
+      thread.appendChild(c3); e._node=c3;
+    } else if(e.k==='confirm'){
+      var c4=document.createElement('div'); c4.className='confirm';
+      c4.innerHTML='<div class="top"><span class="ck">&#10003;</span><b>Rebooking confirmed</b><span class="fn wm">EZY2981</span></div>'+
+        '<div class="body"><div class="route"><div><div class="t wm">18:10</div><div class="ap">LGW · London Gatwick</div></div><div class="ln"></div><div style="text-align:right"><div class="t wm">21:20</div><div class="ap">BCN · Barcelona</div></div></div>'+
+        '<div class="facts"><span>Booking QK7T2M</span><span>No change fee</span><span>Same fare class</span></div>'+
+        '<div class="sent">&#128231; New confirmation &amp; boarding pass sent to your email</div></div>';
+      thread.appendChild(c4); e._node=c4;
+    } else if(e.k==='claim'){
+      var c5=document.createElement('div'); c5.className='claim';
+      c5.innerHTML='<div class="ctop"><span class="cic">&#129534;</span><b>Expenses claim opened</b><span class="cref wm">EJ-EXP-4471</span></div>'+
+        '<div class="cbody">'+
+        '<div class="cfacts"><span>Booking QK7T2M</span><span>easyJet EZY2981</span></div>'+
+        '<div class="cline">Covers reasonable expenses caused by the disruption</div>'+
+        '<div class="cline">Reimbursed to your original card · typically within 7 days</div>'+
+        '<div class="cstep"><span>&#128206;</span>One step left — add your receipt</div></div>';
+      thread.appendChild(c5); e._node=c5;
+    } else if(e.k==='attach'){
+      var c6=document.createElement('div'); c6.className='row u';
+      c6.innerHTML='<div class="filechip"><span class="fi">&#128196;</span><span class="ft"><b>train-ticket.pdf</b><i>Receipt · 42 KB</i></span></div>';
+      thread.appendChild(c6); e._node=c6;
+    }
+  });
+
+  (function(){ var g=document.getElementById('valgrid'); if(!g)return;
+    VALUES.forEach(function(v){ var b=document.createElement('div'); b.className='valbox';
+      b.innerHTML='<div class="vt"><span class="vic">'+v.ic+'</span>'+v.title+'</div><div class="vd">'+v.text+'</div>';
+      g.appendChild(b); v._node=b; });
+  })();
+
+  function flightCard(id,fn,dt,da,dn,at,aa,an,dur,soon){
+    return '<div class="fcard'+(soon?' soon':'')+'" data-f="'+id+'">'+
+      '<div class="tag">SOONEST</div>'+
+      '<div class="fn">'+fn+' · easyJet</div>'+
+      '<div class="times"><div><div class="t wm">'+dt+'</div><div class="ap">'+da+' · '+dn+'</div></div>'+
+      '<div class="arrow"></div><div style="text-align:right"><div class="t wm">'+at+'</div><div class="ap">'+aa+' · '+an+'</div></div></div>'+
+      '<div class="meta"><span class="dur">Direct · '+dur+'</span><span class="fee">No change fee</span></div>'+
+      '<button class="btn">Choose</button></div>';
+  }
+
+  // ---- click-through engine ----
+  var revealed=0;      // number of beats shown so far
+  var busy=false;      // true during a typing→message reveal
+  var busyBeat=-1;     // index of the AI beat currently showing its typing dots
+  var pending=false;   // a click made during typing — honoured once typing ends
+
+  function render(){
+    var newest=null;
+    EV.forEach(function(e,i){
+      var shown = i < revealed;
+      if(e.k==='ai'){
+        var typing = shown && i===busyBeat;
+        e._typing.classList.toggle('show', typing);
+        e._node.classList.toggle('show', shown && !typing);
+        if(typing) newest=e._typing; else if(shown) newest=e._node;
+      } else if(e.k==='pick'){
+        // no node — handled by the chips 'chose' state below
+      } else if(e._node){
+        e._node.classList.toggle('show', shown);
+        if(shown) newest=e._node;
+      }
+    });
+    if(chipsNode) chipsNode.classList.toggle('chose', revealed > pickIndex);
+    if(caroNode){
+      var picked = revealed > flightChoiceIndex;
+      var g=caroNode.querySelector('[data-f="gatwick"]'), l=caroNode.querySelector('[data-f="luton"]');
+      g.classList.toggle('sel',picked); l.classList.toggle('dim',picked);
+      g.querySelector('.btn').textContent = picked ? 'Selected ✓' : 'Choose';
+    }
+    VALUES.forEach(function(v){ v._node.classList.toggle('show', (revealed-1) >= v.b); });
+    var p = Math.max(0, Math.min(1, revealed/EV.length));
+    pbar.style.width=(p*100)+'%'; phead.style.width=(p*100)+'%';
+    nextBtn.disabled = (revealed>=EV.length);   // at the end: no-op, stays put (use restart to reset)
+    if(newest){
+      requestAnimationFrame(function(){ thread.scrollTop = newest.offsetTop + newest.offsetHeight - thread.clientHeight + 28; });
+    }
+  }
+
+  function advance(){
+    if(revealed>=EV.length) return;
+    if(busy){ pending=true; return; }   // clicked mid-type → honour it once typing ends
+    var e=EV[revealed];
+    if(e.k==='ai'){
+      busy=true; revealed++; busyBeat=revealed-1; render();
+      setTimeout(function(){ busyBeat=-1; busy=false; render(); if(pending){ pending=false; advance(); } }, 480);
+    } else {
+      revealed++; render();
+    }
+  }
+
+  function restart(){ revealed=0; busy=false; busyBeat=-1; pending=false; render(); setTimeout(advance, 260); }
+  function jumpTo(n){ revealed=Math.max(0,Math.min(EV.length,n)); busy=false; busyBeat=-1; pending=false; render(); }
+
+  nextBtn.onclick=function(ev){ ev.stopPropagation(); advance(); };
+  restartBtn.onclick=function(ev){ ev.stopPropagation(); restart(); };
+  cw.addEventListener('click',function(ev){ if(revealed<EV.length) advance(); });
+
+  function open(){ launch.classList.add('hidden'); cw.classList.add('open'); setTimeout(advance, 450); }
+  launch.onclick=open;
+
+  // deep link for review/screenshots: #step=N reveals the first N beats instantly
+  var step=(location.hash.match(/step=(\d+)/)||[])[1];
+  if(step){ launch.classList.add('hidden'); cw.classList.add('open'); jumpTo(parseInt(step,10)); }
+  else { window.addEventListener('load',function(){ setTimeout(open, 500); }); }
+})();
+</script>
+</body>
+</html>

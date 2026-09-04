@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>easyJet · Mobile app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ej:#FF6600; --ej-dark:#E85D04; --ej-deep:#243746;
+    --ink:#16202A; --muted:#697586; --line:#E7EBF0;
+    --appbg:#F4F6F9; --card:#FFFFFF;
+    --pos:#0D7C3F; --neg:#D1434B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+       background:radial-gradient(1100px 760px at 50% -8%, #ffe7d3 0%, #f4eee9 46%, #e9edf2 100%);
+       display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;color:var(--ink)}
+  .wm{font-family:'Baloo 2',sans-serif;font-weight:800;letter-spacing:-.5px}
+
+  /* shared easyJet site tab-bar */
+  .site-tabs{position:fixed;left:18px;bottom:18px;z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10)}
+  .site-tabs a{font-size:12.5px;font-weight:600;color:#6B5A50;text-decoration:none;padding:7px 14px;border-radius:999px;line-height:1;white-space:nowrap;transition:background .15s,color .15s}
+  .site-tabs a:hover{background:#FFF1E6;color:var(--ej-dark)}
+  .site-tabs a.on{background:var(--ej);color:#fff}
+  .hint{position:fixed;bottom:20px;right:18px;z-index:90;color:#8a6a54;font-size:12px;max-width:230px;text-align:right}
+  .hint b{color:var(--ej)}
+
+  /* ===== phone frame ===== */
+  .phone{position:relative;width:390px;height:min(844px,94vh);background:#000;border-radius:54px;padding:13px;
+         box-shadow:0 0 0 2px #2a2740, 0 0 0 5px #14121f, 0 30px 70px rgba(255,102,0,.26), 0 8px 24px rgba(20,30,45,.22)}
+  .screen{position:relative;width:100%;height:100%;background:var(--appbg);border-radius:42px;overflow:hidden;display:flex;flex-direction:column}
+  .island{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:120px;height:33px;background:#000;border-radius:20px;z-index:60}
+
+  .statusbar{display:flex;align-items:center;justify-content:space-between;padding:15px 28px 6px;font-size:14px;font-weight:600;color:var(--ink);flex:0 0 auto}
+  .statusbar .r{display:flex;align-items:center;gap:7px;font-size:12px}
+  .bat{display:inline-block;width:24px;height:12px;border:1px solid #9aa3b0;border-radius:3px;position:relative}
+  .bat::after{content:"";position:absolute;left:1px;top:1px;bottom:1px;width:80%;background:#16202A;border-radius:1px}
+
+  .appscroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .appscroll::-webkit-scrollbar{display:none}
+
+  /* app header */
+  .appbar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 8px}
+  .brandtxt{font-size:24px;color:var(--ej)}
+  .appbar .r{display:flex;align-items:center;gap:14px}
+  .iconbtn{position:relative;color:#5b6472;cursor:pointer;display:flex}
+  .iconbtn .badge{position:absolute;top:-5px;right:-6px;background:var(--ej);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;border:2px solid var(--appbg)}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--ej-deep);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+
+  .hello{padding:6px 20px 2px}
+  .hello .sm{color:var(--muted);font-size:13px;letter-spacing:.02em}
+  .hello .lg{font-size:23px;font-weight:800;margin-top:1px;text-transform:uppercase;letter-spacing:.01em}
+
+  /* hero — Big Orange Sale */
+  .hero{margin:12px 18px 4px;border-radius:20px;padding:20px;position:relative;overflow:hidden;color:#fff;
+        background:linear-gradient(135deg,#FF7A1A 0%,#FF6600 55%,#E85D04 100%);box-shadow:0 16px 34px rgba(232,93,4,.34)}
+  .hero::after{content:"";position:absolute;right:-40px;top:-40px;width:170px;height:170px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .hero .kick{font-size:11.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.9)}
+  .hero .big{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:38px;line-height:1;margin:6px 0 2px}
+  .hero .sub{font-size:13px;font-weight:600;color:rgba(255,255,255,.95)}
+  .hero .cta{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--ej-dark);border-radius:999px;padding:8px 15px;font-size:12.5px;font-weight:700;margin-top:14px}
+
+  /* two book cards */
+  .booktabs{display:flex;gap:9px;padding:16px 18px 4px}
+  .bcard{flex:1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px 15px 16px;cursor:pointer;transition:box-shadow .15s,transform .15s;box-shadow:0 4px 14px rgba(20,30,45,.05)}
+  .bcard:hover{box-shadow:0 10px 24px rgba(255,102,0,.14);transform:translateY(-1px)}
+  .bcard .bi{width:40px;height:40px;border-radius:12px;background:#FFF1E6;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--ej)}
+  .bcard .bt{font-size:15px;font-weight:700;margin-top:11px}
+  .bcard .bs{font-size:11.5px;color:var(--muted);margin-top:2px}
+
+  .sec{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 8px}
+  .sec .t{font-size:15px;font-weight:800}
+  .sec .a{font-size:12.5px;color:var(--ej);font-weight:700;cursor:pointer}
+
+  /* upcoming trip card (ties to the demo scenario) */
+  .trip{margin:0 18px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden;box-shadow:0 4px 14px rgba(20,30,45,.05)}
+  .trip .tt{background:linear-gradient(180deg,#fff7f1,#fff);padding:13px 16px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line)}
+  .trip .tt .tf{width:38px;height:38px;border-radius:11px;background:#FFF1E6;display:flex;align-items:center;justify-content:center;font-size:18px}
+  .trip .tt .tm{flex:1}
+  .trip .tt .tm .t1{font-size:14px;font-weight:700}
+  .trip .tt .tm .t2{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .trip .tt .tag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--neg);background:#FBE9EA;padding:4px 9px;border-radius:999px}
+  .trip .tr{display:flex;align-items:center;gap:12px;padding:14px 16px}
+  .trip .tr .leg{text-align:center}
+  .trip .tr .leg .tm3{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:20px}
+  .trip .tr .leg .ap{font-size:11px;color:var(--muted)}
+  .trip .tr .line{flex:1;height:2px;background:var(--line);position:relative}
+  .trip .tr .line::after{content:"✈";position:absolute;right:-3px;top:-9px;color:var(--ej);font-size:12px}
+  .trip .tb{display:flex;gap:9px;padding:0 16px 15px}
+  .trip .tb button{flex:1;border-radius:10px;padding:10px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid var(--ej);background:#fff;color:var(--ej)}
+  .trip .tb button.solid{background:var(--ej);color:#fff;border-color:var(--ej)}
+
+  /* destinations row */
+  .dests{display:flex;gap:10px;overflow-x:auto;padding:4px 18px 6px;scroll-snap-type:x mandatory}
+  .dests::-webkit-scrollbar{display:none}
+  .dest{flex:0 0 128px;scroll-snap-align:start;border-radius:14px;overflow:hidden;position:relative;height:96px;color:#fff;display:flex;align-items:flex-end;padding:10px;font-weight:700;font-size:13px;box-shadow:0 6px 16px rgba(20,30,45,.10)}
+  .dest .p{position:absolute;right:8px;top:8px;background:rgba(255,255,255,.92);color:var(--ej-dark);font-size:10.5px;font-weight:700;border-radius:999px;padding:2px 8px}
+  .d1{background:linear-gradient(160deg,#3aa0ff,#0b62c9)} .d2{background:linear-gradient(160deg,#ff9e5e,#e85d04)} .d3{background:linear-gradient(160deg,#37c2a6,#0e7c62)}
+
+  .footnote{text-align:center;color:#a2a9b4;font-size:11px;padding:16px 0 22px}
+
+  /* ===== proactive bubble ===== */
+  .proactive{position:absolute;left:14px;right:14px;bottom:92px;z-index:75;
+             background:#fff;color:var(--ink);border-radius:16px;padding:13px 14px;display:flex;gap:11px;align-items:flex-start;
+             box-shadow:0 14px 34px rgba(20,30,45,.22);border:1px solid #ffe0c8;
+             transform:translateY(20px);opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(.34,1.3,.5,1),opacity .3s}
+  .proactive.show{transform:translateY(0);opacity:1;pointer-events:auto}
+  .proactive .pav{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#FF7A1A,var(--ej));flex:0 0 auto;
+                  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px;font-family:'Baloo 2',sans-serif}
+  .proactive .pt{flex:1}
+  .proactive .pt .pn{font-size:12px;font-weight:700;color:var(--ej-dark);display:flex;align-items:center;gap:6px}
+  .proactive .pt .pn::after{content:"easyJet Assistant · now";font-weight:500;color:#9a97ad;font-size:10.5px}
+  .proactive .pt .pm{font-size:13px;line-height:1.4;margin-top:3px;color:#33314a}
+  .proactive .pt .pcta{margin-top:9px;background:var(--ej);color:#fff;border:0;border-radius:9px;padding:8px 12px;font-size:12.5px;font-weight:700;cursor:pointer}
+  .proactive .pt .pcta:hover{background:var(--ej-dark)}
+  .proactive .px{position:absolute;top:9px;right:11px;color:#b6b3c7;cursor:pointer;font-size:16px;line-height:1;background:none;border:0}
+
+  /* bottom tab bar */
+  .tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:flex-start;padding:10px 6px 22px;border-top:1px solid var(--line);background:#fff;position:relative;z-index:50}
+  .tb{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;font-weight:600;color:#8a92a0;cursor:pointer;position:relative;flex:1}
+  .tb.on{color:var(--ej)}
+  .tb svg{width:22px;height:22px}
+  .tb .dot{position:absolute;top:-3px;right:calc(50% - 20px);width:9px;height:9px;border-radius:50%;background:var(--ej);border:2px solid #fff}
+
+  /* ===== in-app chat sheet ===== */
+  .chat-scrim{position:absolute;inset:0;z-index:70;background:rgba(20,30,45,.38);
+              backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
+              opacity:0;pointer-events:none;transition:opacity .3s}
+  .chat-scrim.open{opacity:1;pointer-events:auto}
+  .chat-sheet{position:absolute;left:0;right:0;bottom:0;height:82%;z-index:72;display:flex;flex-direction:column;
+              background:#fff;border-radius:26px 26px 0 0;box-shadow:0 -18px 55px rgba(20,30,45,.32);
+              transform:translateY(106%);transition:transform .40s cubic-bezier(.32,1.02,.4,1)}
+  .chat-sheet.open{transform:translateY(0)}
+  .grabber{width:38px;height:5px;border-radius:3px;background:#dfe3ea;margin:9px auto 2px;flex:0 0 auto}
+  .chat-head{display:flex;align-items:center;gap:11px;padding:8px 16px 12px;flex:0 0 auto;border-bottom:1px solid var(--line);background:var(--ej);color:#fff;border-radius:0}
+  .chat-sheet .chat-head{border-radius:0}
+  .chat-head .cav{width:38px;height:38px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--ej);font-size:19px;flex:0 0 auto;font-family:'Baloo 2',sans-serif}
+  .chat-head .ct{flex:1}
+  .chat-head .ct .t1{font-size:15px;font-weight:700}
+  .chat-head .ct .t2{font-size:11.5px;color:rgba(255,255,255,.9);display:flex;align-items:center;gap:5px;margin-top:1px}
+  .chat-head .ct .t2 .cs2-status-dot{width:7px;height:7px;border-radius:50%;background:#ffd9a8;display:inline-block}
+  .chat-head .ct .t2 .cs2-status-dot.live{background:#8CF0B6}
+  .chat-head .cx{background:rgba(255,255,255,.18);border:0;color:#fff;width:30px;height:30px;border-radius:50%;font-size:18px;cursor:pointer;line-height:1;flex:0 0 auto}
+  .chat-head .cx:hover{background:rgba(255,255,255,.30)}
+
+  .chat-body{flex:1;overflow-y:auto;padding:14px 15px 6px;display:flex;flex-direction:column;gap:9px;background:#FBFCFD}
+  .chat-body::-webkit-scrollbar{display:none}
+  .cs2-msg{max-width:86%;padding:10px 13px;border-radius:16px;font-size:13.5px;line-height:1.45;word-wrap:break-word}
+  .cs2-bot{align-self:flex-start;background:#F1F3F6;color:#1b2733;border-bottom-left-radius:5px}
+  .cs2-bot a{color:var(--ej-dark);font-weight:600}
+  .cs2-bot code{background:#e7e9ee;padding:1px 5px;border-radius:5px;font-size:12px}
+  .cs2-bot ul{margin:6px 0 2px;padding-left:18px}
+  .cs2-user{align-self:flex-end;background:var(--ej);color:#fff;border-bottom-right-radius:5px}
+  .cs2-typing{align-self:flex-start;background:#F1F3F6;border-radius:16px;padding:12px 14px;display:flex;gap:4px}
+  .cs2-typing span{width:7px;height:7px;border-radius:50%;background:#AEB8C4;animation:cblink 1.2s infinite}
+  .cs2-typing span:nth-child(2){animation-delay:.2s}.cs2-typing span:nth-child(3){animation-delay:.4s}
+  @keyframes cblink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+
+  .chat-chips{display:flex;flex-wrap:wrap;gap:7px;padding:8px 15px 2px;flex:0 0 auto;background:#FBFCFD}
+  .cs2-chip{background:#FFF1E6;border:1px solid #FFD1AE;color:var(--ej-dark);border-radius:999px;padding:8px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .cs2-chip:hover{background:#ffe4cf}
+  .chat-input{display:flex;gap:8px;padding:12px 13px 18px;flex:0 0 auto;background:#fff;border-top:1px solid var(--line)}
+  .chat-input input{flex:1;background:#F1F3F6;border:1px solid var(--line);border-radius:999px;padding:11px 15px;font-size:14px;color:var(--ink);outline:none;font-family:inherit}
+  .chat-input input:focus{border-color:var(--ej)}
+  .chat-input button{background:var(--ej);border:0;color:#fff;border-radius:50%;width:42px;height:42px;cursor:pointer;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .powered{text-align:center;font-size:10px;color:#a2a9b4;padding:0 0 8px;background:#fff}
+  .powered b{color:#7a8290}
+</style>
+</head>
+<body>
+  <nav class="site-tabs" aria-label="Demo channels">
+    <a href="app.html" class="on">App</a>
+    <a href="index.html">Web</a>
+    <a href="voice.html">Voice</a>
+    <a href="channels.html">Channels</a>
+    <a href="mcp.html">MCP</a>
+  </nav>
+  <div class="hint">A proactive appears after 6s · tap it or <b>Support</b> (bottom bar) to chat with the live easyJet Assistant &rarr;</div>
+
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="r">&#9679;&#9679;&#9679;&nbsp; &#128246; &nbsp;<span class="bat"></span></span>
+      </div>
+
+      <div class="appscroll">
+        <div class="appbar">
+          <div class="brandtxt wm">easyJet</div>
+          <div class="r">
+            <div class="iconbtn" title="Notifications">
+              <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              <span class="badge">1</span>
+            </div>
+            <div class="avatar">RK</div>
+          </div>
+        </div>
+
+        <div class="hello">
+          <div class="sm">Hello,</div>
+          <div class="lg">Richard</div>
+        </div>
+
+        <div class="hero">
+          <div class="kick">Big Orange Sale</div>
+          <div class="big">Up to 20% off</div>
+          <div class="sub">flights — plus save on holidays!</div>
+          <div class="cta">Book now &rarr;</div>
+        </div>
+
+        <div class="booktabs">
+          <div class="bcard">
+            <div class="bi">✈️</div>
+            <div class="bt">Book flights</div>
+            <div class="bs">Over 1,000 routes across Europe</div>
+          </div>
+          <div class="bcard">
+            <div class="bi">🏖️</div>
+            <div class="bt">Book holidays</div>
+            <div class="bs">Flight + hotel, ATOL protected</div>
+          </div>
+        </div>
+
+        <div class="sec"><div class="t">Your next trip</div><div class="a">All trips</div></div>
+        <div class="trip">
+          <div class="tt">
+            <div class="tf">✈️</div>
+            <div class="tm"><div class="t1">London → Barcelona</div><div class="t2">Booking QK7T2M · Today</div></div>
+            <span class="tag">Cancelled</span>
+          </div>
+          <div class="tr">
+            <div class="leg"><div class="tm3 wm">15:30</div><div class="ap">LTN</div></div>
+            <div class="line"></div>
+            <div class="leg"><div class="tm3 wm">18:55</div><div class="ap">BCN</div></div>
+          </div>
+          <div class="tb">
+            <button onclick="openChat('My flight to Barcelona today (QK7T2M) has been cancelled — can you help me rebook?')">Sort my flight</button>
+            <button class="solid" onclick="openChat()">Get help</button>
+          </div>
+        </div>
+
+        <div class="sec"><div class="t">Popular right now</div><div class="a">See all</div></div>
+        <div class="dests">
+          <div class="dest d1"><span class="p">£29</span>Amsterdam</div>
+          <div class="dest d2"><span class="p">£24</span>Barcelona</div>
+          <div class="dest d3"><span class="p">£31</span>Faro</div>
+        </div>
+
+        <div class="footnote">easyJet is a demonstration app · Powered by Ada</div>
+      </div>
+
+      <!-- proactive nudge -->
+      <div class="proactive" id="proactive">
+        <button class="px" onclick="dismissProactive()">&times;</button>
+        <div class="pav">e</div>
+        <div class="pt">
+          <div class="pn">easyJet Assistant</div>
+          <div class="pm">Noticed your Barcelona flight was disrupted — I can help you rebook in a minute.</div>
+          <button class="pcta" onclick="openChat()">Get help</button>
+        </div>
+      </div>
+
+      <!-- bottom tab bar (easyJet: Home · Book · Trips · Passes · Support) -->
+      <div class="tabbar">
+        <div class="tb on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</div>
+        <div class="tb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 2v4M16 2v4"/></svg>Book</div>
+        <div class="tb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M2 12s3-7 10-7 10 7 10 7"/><path d="M22 12s-3 7-10 7-10-7-10-7"/><path d="M17 12l3-2M17 12l3 2"/></svg>Trips</div>
+        <div class="tb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M7 15h5"/></svg>Passes</div>
+        <div class="tb" id="supportTab" onclick="openChat()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          Support
+          <span class="dot" id="supportDot" style="display:none"></span>
+        </div>
+      </div>
+
+      <!-- in-app chat (custom easyJet UI, wired to the live Ada agent) -->
+      <div class="chat-scrim" id="chatScrim" onclick="closeChat()"></div>
+      <div class="chat-sheet" id="chatSheet">
+        <div class="grabber"></div>
+        <div class="chat-head">
+          <div class="cav">e</div>
+          <div class="ct">
+            <div class="t1">easyJet Assistant</div>
+            <div class="t2"><span class="cs2-status-dot" id="cs2Dot"></span> <span id="cs2Txt">connecting…</span></div>
+          </div>
+          <button class="cx" onclick="closeChat()">&times;</button>
+        </div>
+        <div class="chat-body" id="cs2Body"></div>
+        <div class="chat-chips" id="cs2Chips"></div>
+        <form class="chat-input" onsubmit="appSend();return false;">
+          <input id="cs2Text" placeholder="Message the easyJet Assistant…" autocomplete="off">
+          <button type="submit" aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+        <div class="powered">Powered by <b>Ada</b></div>
+      </div>
+    </div>
+  </div>
+
+<!-- ═══ Ada headless SDK — live connection to the rkirk-airlines-demo agent ═══ -->
+<script>
+window.adaSettings = {
+  handle: "rkirk-airlines-demo",
+  headless: true,
+  enableProgrammaticControl: true,
+  onAdaEmbedLoaded: function(){ if (window.__ejWire) window.__ejWire(); }
+};
+(function(){
+  if (document.getElementById("__ada")) return;
+  var s = document.createElement("script");
+  s.id = "__ada"; s.async = true; s.src = "https://static.ada.support/embed2.js";
+  s.setAttribute("data-handle", "rkirk-airlines-demo");
+  (document.head || document.documentElement).appendChild(s);
+})();
+</script>
+
+<script>
+  var GREETING = "Hi Richard 👋 I'm the easyJet Assistant, powered by Ada. I can help with bookings, disruptions, baggage, check-in and more. How can I help?";
+  var GREETING_RX = /^(hi|hello|hey|welcome|thanks for (calling|contacting)|good (morning|afternoon|evening))/i;
+
+  var started=false, adaReady=false, typingEl=null, renderedIds={}, awaiting=false, watchdog=null, pendingFirst=null;
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function mdToHtml(md){
+    var t=esc(md);
+    t=t.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*]+)\*/g,'$1<i>$2</i>');
+    t=t.replace(/`([^`]+)`/g,'<code>$1</code>');
+    t=t.replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+    t=t.replace(/(?:^|\n)[-•]\s+(.*)/g,function(_,i){return '\n<li>'+i+'</li>';});
+    t=t.replace(/(<li>[\s\S]*?<\/li>)/g,function(m){return '<ul>'+m.replace(/\n/g,'')+'</ul>';});
+    t=t.replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>');
+    return t;
+  }
+  function mdStrip(md){ return md.replace(/[*_`#>]/g,'').replace(/\[([^\]]+)\]\([^)]+\)/g,'$1'); }
+
+  function body(){ return document.getElementById('cs2Body'); }
+  function scroll(){ var b=body(); if(b) b.scrollTop=b.scrollHeight; }
+  function addUser(t){ var d=document.createElement('div'); d.className='cs2-msg cs2-user'; d.textContent=t; body().appendChild(d); scroll(); }
+  function showTyping(){ hideTyping(); typingEl=document.createElement('div'); typingEl.className='cs2-typing'; typingEl.innerHTML='<span></span><span></span><span></span>'; body().appendChild(typingEl); scroll(); }
+  function hideTyping(){ if(typingEl){ typingEl.remove(); typingEl=null; } }
+  function addBot(md){
+    hideTyping();
+    var d=document.createElement('div'); d.className='cs2-msg cs2-bot'; body().appendChild(d);
+    var plain=mdStrip(md), i=0, step=Math.max(1,Math.ceil(plain.length/45));
+    var iv=setInterval(function(){ i+=step; d.textContent=plain.slice(0,i); scroll();
+      if(i>=plain.length){ clearInterval(iv); d.innerHTML=mdToHtml(md); scroll(); }
+    },12);
+  }
+  function setStatus(live){ adaReady=live;
+    document.getElementById('cs2Dot').className='cs2-status-dot'+(live?' live':'');
+    document.getElementById('cs2Txt').textContent=live?'online · replies instantly':'connecting…';
+  }
+  function setChips(list){
+    var chips=document.getElementById('cs2Chips'); chips.innerHTML='';
+    list.forEach(function(txt){ var b=document.createElement('button'); b.className='cs2-chip'; b.textContent=txt; b.onclick=function(){ sendMsg(txt); }; chips.appendChild(b); });
+  }
+
+  var wired=false;
+  function wire(){
+    if(wired || !(window.adaEmbed && window.adaEmbed.subscribeEvent)) return;
+    wired=true;
+    try{
+      window.adaEmbed.subscribeEvent('ada:message:received', function(p){ var m=p&&p.message; if(m) onBot(m); });
+      window.adaEmbed.subscribeEvent('ada:typing:start', function(){ if(started) showTyping(); });
+      window.adaEmbed.subscribeEvent('ada:ready', function(){ setStatus(true); });
+    }catch(e){}
+    if(window.adaEmbed.sendMessage) setStatus(true);
+  }
+  window.__ejWire=wire;
+  var poll=setInterval(function(){ wire(); if(wired && window.adaEmbed && window.adaEmbed.sendMessage){ setStatus(true); clearInterval(poll); } },150);
+  setTimeout(function(){ clearInterval(poll); },20000);
+
+  function onBot(m){
+    if(!m || m.role==='user') return;
+    if(m.id){ if(renderedIds[m.id]) return; renderedIds[m.id]=1; }
+    var b=(m.body||'').trim(); if(!b) return;
+    if(GREETING_RX.test(b)) return;   // we show our own branded greeting
+    awaiting=false; clearTimeout(watchdog);
+    addBot(b);
+  }
+
+  function openChat(prefill){
+    dismissProactive();
+    document.getElementById('supportDot').style.display='none';
+    document.getElementById('chatScrim').classList.add('open');
+    document.getElementById('chatSheet').classList.add('open');
+    if(!started){
+      started=true;
+      setTimeout(function(){
+        addBot(GREETING);
+        setChips(['My flight to Barcelona','Baggage allowance','Change my flight']);
+        if(prefill) setTimeout(function(){ sendMsg(prefill); }, 500);
+      }, 300);
+    } else if(prefill){ sendMsg(prefill); }
+    setTimeout(function(){ var el=document.getElementById('cs2Text'); if(el) el.focus(); }, 420);
+  }
+  window.openChat=openChat;
+  function closeChat(){ document.getElementById('chatScrim').classList.remove('open'); document.getElementById('chatSheet').classList.remove('open'); }
+  window.closeChat=closeChat;
+
+  function appSend(){ var t=document.getElementById('cs2Text').value.trim(); if(t) sendMsg(t); }
+  window.appSend=appSend;
+
+  function sendMsg(text){
+    document.getElementById('cs2Text').value='';
+    document.getElementById('cs2Chips').innerHTML='';
+    addUser(text); showTyping();
+    awaiting=true; clearTimeout(watchdog);
+    watchdog=setTimeout(function(){ if(!awaiting) return; awaiting=false; hideTyping();
+      addBot("I'm having a little trouble connecting right now — please try again in a moment. 🙏"); }, 24000);
+    if(window.adaEmbed && window.adaEmbed.sendMessage){
+      window.adaEmbed.sendMessage(text).catch(function(){ awaiting=false; clearTimeout(watchdog); hideTyping();
+        addBot("I had trouble sending that — please try again in a moment."); });
+    } else {
+      // SDK not ready (e.g. embed blocked) — fail gracefully
+      setTimeout(function(){ awaiting=false; hideTyping();
+        addBot("I can't reach the live assistant from here just yet. If you're viewing this on a host that blocks the Ada embed, open it on GitHub Pages to chat live."); }, 900);
+    }
+  }
+  window.sendMsg=sendMsg;
+
+  var proTimer=setTimeout(function(){
+    document.getElementById('proactive').classList.add('show');
+    document.getElementById('supportDot').style.display='block';
+  }, 6000);
+  function dismissProactive(){ document.getElementById('proactive').classList.remove('show'); clearTimeout(proTimer); }
+  window.dismissProactive=dismissProactive;
+</script>
+</body>
+</html>

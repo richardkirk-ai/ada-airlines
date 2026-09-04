@@ -13,7 +13,6 @@
     --page:#EBEEF2; --card:#FFFFFF; --ink:#16202A; --muted:#697586; --line:#E4E8EE;
     --green:#129E5E; --green-soft:#E7F6EE;
     --shadow:0 18px 50px rgba(20,30,45,.14);
-    --code:#0F1B26;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{min-height:100%}
@@ -33,98 +32,57 @@
   .wrap{max-width:1240px;margin:0 auto;padding:40px 26px 120px}
 
   /* ── Hero ── */
-  .hero{text-align:center;margin-bottom:34px}
+  .hero{text-align:center;margin-bottom:38px}
   .hero .eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--ej);margin-bottom:11px}
   .hero h1{font-family:'Baloo 2',sans-serif;font-size:clamp(28px,4vw,40px);font-weight:700;color:var(--ej-deep);letter-spacing:-.5px;line-height:1.08}
   .hero h1 .thin{font-weight:400;color:var(--ink)}
-  .hero p{font-size:16px;color:#46525E;max-width:680px;margin:14px auto 0;line-height:1.55}
+  .hero p{font-size:16px;color:#46525E;max-width:720px;margin:14px auto 0;line-height:1.55}
 
-  /* ── Demo grid ── */
-  .demo{position:relative;display:grid;grid-template-columns:300px 1fr 388px;gap:0;align-items:stretch}
-  .col-h{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:15px}
+  /* ── Diagram grid ── */
+  .demo{display:grid;grid-template-columns:1fr auto 236px auto 1fr;gap:0;align-items:stretch}
+  .col-h{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:15px;min-height:28px}
 
-  /* wires layer */
-  .wires{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:visible}
-  .wire{fill:none;stroke:#D3DAE3;stroke-width:1.6;stroke-dasharray:5 6;opacity:.9;transition:stroke .25s,stroke-width .25s}
-  .wire.on{stroke:var(--ej);stroke-width:2.4;stroke-dasharray:none;filter:drop-shadow(0 0 5px rgba(255,102,0,.4))}
-  .wdot{fill:var(--ej);filter:drop-shadow(0 0 6px rgba(255,102,0,.7))}
-
-  /* systems column */
-  .sys-col{position:relative;z-index:2;display:flex;flex-direction:column;gap:10px}
-  .syscard{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:11px;box-shadow:0 3px 12px rgba(20,30,45,.05);transition:border-color .25s,box-shadow .25s,transform .25s;position:relative}
-  .syscard .badge{width:38px;height:38px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
-  .syscard .st{min-width:0;flex:1}
-  .syscard .sn{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.15}
-  .syscard .sr{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
-  .syscard .light{width:9px;height:9px;border-radius:50%;background:#CFD6DF;flex:0 0 auto;transition:background .25s,box-shadow .25s}
-  .syscard.active{border-color:var(--ej);box-shadow:0 8px 22px rgba(255,102,0,.20);transform:translateX(3px)}
-  .syscard.active .light{background:var(--ej);box-shadow:0 0 0 4px rgba(255,102,0,.18);animation:blip .8s ease-in-out infinite}
-  .syscard.done{border-color:#BFE7D2}
-  .syscard.done .light{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  /* systems / config cards */
+  .col{display:flex;flex-direction:column;gap:9px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 13px;display:flex;align-items:center;gap:11px;box-shadow:0 3px 12px rgba(20,30,45,.05);transition:border-color .3s,box-shadow .3s,transform .3s;position:relative}
+  .card .badge{width:38px;height:38px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:20px}
+  .card .st{min-width:0;flex:1}
+  .card .sn{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.15}
+  .card .sr{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
+  .card .light{width:9px;height:9px;border-radius:50%;background:#CFD6DF;flex:0 0 auto;transition:background .3s,box-shadow .3s}
+  .card.active{border-color:var(--ej);box-shadow:0 8px 22px rgba(255,102,0,.20)}
+  .card.active .light{background:var(--ej);box-shadow:0 0 0 4px rgba(255,102,0,.18);animation:blip .8s ease-in-out infinite}
+  .card.updated{border-color:#BFE7D2}
+  .card.updated .light{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+  .sys-col .card.active{transform:translateX(4px)}
+  .cfg-col .card{border-color:#FFE0C4}
+  .cfg-col .card.active{transform:translateX(-4px)}
   @keyframes blip{0%,100%{opacity:.55}50%{opacity:1}}
 
-  /* Ada hub column */
-  .hub-col{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .mcp-note{font-size:10.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ej);background:#FFF1E6;border:1px solid #FFD9BF;border-radius:999px;padding:4px 12px;margin-bottom:14px}
-  .hub{background:linear-gradient(165deg,var(--ej) 0%,var(--ej-dark) 100%);border-radius:22px;padding:24px 22px;text-align:center;color:#fff;width:212px;box-shadow:0 18px 44px rgba(232,93,4,.30);position:relative}
-  .hub::after{content:"";position:absolute;inset:-3px;border-radius:22px;border:2px solid rgba(255,102,0,.18);animation:halo 2.6s ease-in-out infinite}
+  /* arrows */
+  .arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 20px;gap:5px}
+  .arrow .lbl{font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ej)}
+  .arrow .line{width:62px;height:2px;background:linear-gradient(90deg,rgba(255,102,0,.25),rgba(255,102,0,.9),rgba(255,102,0,.25));position:relative;border-radius:2px}
+  .arrow .line::after{content:'▶';position:absolute;right:-9px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--ej)}
+  .arrow .sub{font-size:9.5px;color:var(--muted);text-align:center;line-height:1.3;white-space:nowrap}
+  @media (max-width:960px){ .arrow{padding:6px 0}.arrow .line{width:120px} }
+
+  /* ── AI assistant hub ── */
+  .hub-col{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .hub{background:linear-gradient(165deg,var(--ej) 0%,var(--ej-dark) 100%);border-radius:22px;padding:22px 20px;text-align:center;color:#fff;width:236px;box-shadow:0 18px 44px rgba(232,93,4,.30);position:relative}
+  .hub::after{content:"";position:absolute;inset:-3px;border-radius:22px;border:2px solid rgba(255,102,0,.18);animation:halo 2.6s ease-in-out infinite;pointer-events:none}
   @keyframes halo{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:0;transform:scale(1.05)}}
-  .hub .orb{width:64px;height:64px;margin:0 auto 12px;border-radius:18px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 7px rgba(255,255,255,.07)}
-  .hub .orb .a{font-family:'Baloo 2';font-weight:800;font-size:30px;color:#fff;line-height:1}
-  .hub .hname{font-family:'Baloo 2';font-size:24px;font-weight:800;letter-spacing:-.3px}
-  .hub .htag{font-size:12.5px;color:#FFE9D8;margin-top:2px;font-weight:500}
-  .hub .doing{margin-top:14px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);border-radius:11px;padding:9px 11px;font-size:11.5px;font-weight:600;color:#fff;min-height:52px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.35}
+  .hub .htag{font-size:12px;color:#FFE9D8;font-weight:500;line-height:1.5;margin-bottom:15px}
+  .ai-row{display:flex;justify-content:center;gap:11px}
+  .ai-item{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .ai-logo{width:52px;height:52px;border-radius:13px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;padding:8px;transition:transform .3s,box-shadow .3s,background .3s}
+  .ai-logo.lit{background:#fff;transform:translateY(-3px) scale(1.05);box-shadow:0 10px 22px rgba(0,0,0,.22)}
+  .ai-name{font-size:10px;font-weight:700;color:#FFE9D8;letter-spacing:.2px}
+  .hub .doing{margin-top:16px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.26);border-radius:11px;padding:10px 11px;font-size:11.5px;font-weight:600;color:#fff;min-height:50px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.4}
   .hub .doing .think{color:#FFE9D8;font-weight:500}
-  .hub .assist{margin-top:11px;display:flex;align-items:center;justify-content:center;gap:0}
-  .hub .assist .av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;border:2px solid var(--ej-dark);margin-left:-7px}
-  .hub .assist .av:first-child{margin-left:0}
-  .hub .al{font-size:10px;color:#FFE0C7;margin-top:8px;letter-spacing:.3px}
-
-  /* console column */
-  .console{position:relative;z-index:2;background:var(--code);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;min-height:520px}
-  .con-head{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.09);flex:0 0 auto}
-  .con-head .dot{width:11px;height:11px;border-radius:50%}
-  .con-head .r{background:#FF5F57}.con-head .y{background:#FEBC2E}.con-head .g{background:#28C840}
-  .con-head .ct{color:#8FA3B4;font-size:11.5px;font-weight:600;letter-spacing:.4px;margin-left:6px}
-  .con-head .live{margin-left:auto;display:flex;align-items:center;gap:6px;color:#5FD39A;font-size:10.5px;font-weight:700;letter-spacing:.5px}
-  .con-head .live .lg{width:7px;height:7px;border-radius:50%;background:#5FD39A;box-shadow:0 0 0 3px rgba(95,211,154,.2);animation:blip .9s infinite}
-  .con-body{flex:1;overflow-y:auto;padding:14px;font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:12px;line-height:1.55;display:flex;flex-direction:column;gap:7px}
-  .con-body::-webkit-scrollbar{width:7px}.con-body::-webkit-scrollbar-thumb{background:#2C3B49;border-radius:4px}
-
-  .req-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:11px 13px;color:#D6E0E9;font-family:'Inter',sans-serif;font-size:12.5px;line-height:1.5}
-  .req-pill .lbl{display:block;font-size:9.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:#FF9A57;margin-bottom:5px}
-  .req-pill b{color:#fff}
-
-  .cline{display:none;animation:pop .28s ease both}
-  .cline.show{display:block}
-  .cthink{color:#7E93A5;font-style:italic;font-family:'Inter',sans-serif;font-size:11.5px}
-  .cthink::before{content:"◇ ";color:#FF9A57;font-style:normal}
-  .creq{color:#8FD0FF}
-  .creq .arw{color:#FF9A57;font-weight:700}
-  .creq .chip{display:inline-block;font-family:'Inter',sans-serif;font-size:9.5px;font-weight:700;color:#0F1B26;background:#8FA3B4;border-radius:5px;padding:1px 6px;margin-right:7px;vertical-align:1px}
-  .cres{color:#7DE0AE;padding-left:14px;position:relative}
-  .cres::before{content:"✓";position:absolute;left:0;color:#5FD39A;font-weight:800}
-  .cres .via{color:#5C7183;font-family:'Inter',sans-serif;font-size:10px}
-
-  .resolve{display:none;margin-top:4px;background:linear-gradient(135deg,rgba(18,158,94,.16),rgba(18,158,94,.06));border:1px solid rgba(95,211,154,.4);border-radius:12px;padding:13px 14px;font-family:'Inter',sans-serif}
-  .resolve.show{display:block;animation:pop .35s ease both}
-  .resolve .rh{color:#8FF0C0;font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
-  .resolve .rh .ck{width:20px;height:20px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800}
-  .resolve .rs{color:#B8CBD6;font-size:11.5px;margin-top:7px;line-height:1.5}
-  .resolve .stats{margin-top:11px;display:flex;gap:8px;flex-wrap:wrap}
-  .resolve .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:7px 11px;flex:1;min-width:78px;text-align:center}
-  .resolve .stat .n{font-family:'Baloo 2';font-weight:800;font-size:19px;color:#fff;line-height:1}
-  .resolve .stat .l{font-size:9.5px;color:#8FA3B4;margin-top:3px;letter-spacing:.3px}
-
-  /* replay control */
-  .con-foot{flex:0 0 auto;border-top:1px solid rgba(255,255,255,.09);padding:9px 12px;display:flex;align-items:center;gap:10px}
-  .con-foot .prog{flex:1;height:5px;background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
-  .con-foot .prog i{display:block;height:100%;width:0;background:var(--ej);border-radius:3px;transition:width .4s ease}
-  .con-foot button{background:var(--ej);color:#fff;border:none;border-radius:20px;padding:7px 15px;font-family:'Inter',sans-serif;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
-  .con-foot button:hover{background:var(--ej-dark)}
 
   /* ── loop band ── */
-  .loop{margin-top:34px;background:linear-gradient(90deg,#FFF3E9,#fff);border:1px solid #FFE0C4;border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
+  .loop{margin-top:38px;background:linear-gradient(90deg,#FFF3E9,#fff);border:1px solid #FFE0C4;border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap}
   .loop .licon{width:44px;height:44px;flex:0 0 auto;color:var(--ej)}
   .loop .ltext{max-width:760px}
   .loop .lh{font-family:'Baloo 2';font-size:16px;font-weight:700;color:var(--ej-deep)}
@@ -133,16 +91,15 @@
   .loop .sep{color:var(--ej);font-weight:800}
 
   /* channel footer */
-  .chfoot{margin-top:20px;text-align:center}
+  .chfoot{margin-top:22px;text-align:center}
   .chfoot .cl{font-size:11px;color:var(--muted);letter-spacing:.4px;margin-bottom:11px}
   .chstrip{display:flex;justify-content:center;gap:9px;flex-wrap:wrap}
   .chstrip .ci{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:7px 14px;font-size:12px;font-weight:600;color:#46525E}
 
   @media (max-width:960px){
-    .demo{grid-template-columns:1fr;gap:14px}
-    .wires{display:none}
-    .hub-col{order:-1}
-    .console{min-height:440px}
+    .demo{grid-template-columns:1fr}
+    .hub-col{order:-1;margin-bottom:6px}
+    .col-h{min-height:0}
   }
 
   /* ── shared easyJet bottom tab-bar ── */
@@ -174,52 +131,43 @@
 
   <div class="hero">
     <div class="eyebrow">Model Context Protocol</div>
-    <h1>One AI agent, <span class="thin">connected to every system you run</span></h1>
-    <p>Through MCP, Ada securely reaches into your airline&rsquo;s operational systems &mdash; reading the customer profile, rebooking across GDS, arranging duty of care and updating the servicing record &mdash; to resolve a disruption end&#8209;to&#8209;end.</p>
+    <h1>Manage Ada with <span class="thin">your AI assistant</span></h1>
+    <p>Connect Claude, ChatGPT or Microsoft Copilot to Ada via MCP. Your assistant reads your airline&rsquo;s systems and updates Ada&rsquo;s configuration &mdash; building playbooks, actions, knowledge and simulations in plain English, no manual rebuilds.</p>
   </div>
 
-  <!-- ── Live MCP flow ── -->
+  <!-- ── 3-column diagram ── -->
   <div class="demo" id="demo">
-    <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
 
-    <!-- Connected systems -->
+    <!-- Column 1: Your systems -->
     <div>
-      <div class="col-h">Connected systems</div>
-      <div class="sys-col" id="sysCol">
+      <div class="col-h">Your systems</div>
+      <div class="col sys-col" id="sysCol">
 
-        <div class="syscard" data-sys="dynamics">
+        <div class="card" data-sys="dynamics">
           <span class="badge">
             <svg viewBox="0 0 40 40" width="38" height="38"><defs><linearGradient id="dynG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2A7BE4"/><stop offset="1" stop-color="#0A2F87"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#dynG)"/><path d="M12 13.5c8-3.6 15 .2 15 6.5 0 6-6.6 9.4-14 6.9 5.6.5 10.4-2 10.4-6.6 0-4.9-5.8-6.9-11.4-6.8z" fill="#fff" opacity=".96"/><path d="M20.5 15.4c4.6 1.2 7.4 3.4 7.4 6.5 0 3-2.7 5.2-6.6 5.9 2.9-1.3 4.6-3 4.6-5.8 0-3-2.5-5.1-5.4-6.6z" fill="#fff" opacity=".55"/></svg>
           </span>
-          <div class="st"><div class="sn">Microsoft Dynamics 365</div><div class="sr">CRM &middot; customer profile &amp; cases</div></div>
+          <div class="st"><div class="sn">Microsoft Dynamics 365</div><div class="sr">CRM &middot; customer profiles &amp; cases</div></div>
           <span class="light"></span>
         </div>
 
-        <div class="syscard" data-sys="sabre">
+        <div class="card" data-sys="sabre">
           <span class="badge">
             <svg viewBox="0 0 40 40" width="38" height="38"><rect width="40" height="40" rx="10" fill="#D0212F"/><path d="M20 8l10.4 6v12L20 32 9.6 26V14z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" opacity=".9"/><path d="M24.6 16.4c-1.1-1-2.9-1.6-4.7-1.6-2.6 0-4.3 1.1-4.3 2.8 0 4 9.2 1.9 9.2 6.2 0 1.9-2 3.1-4.9 3.1-2 0-3.9-.6-5.1-1.7" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round"/></svg>
           </span>
-          <div class="st"><div class="sn">Sabre</div><div class="sr">GDS &middot; bookings, PNRs, ticketing</div></div>
+          <div class="st"><div class="sn">Sabre</div><div class="sr">GDS &middot; bookings &amp; PNRs</div></div>
           <span class="light"></span>
         </div>
 
-        <div class="syscard" data-sys="amadeus">
+        <div class="card" data-sys="amadeus">
           <span class="badge">
             <svg viewBox="0 0 40 40" width="38" height="38"><rect width="40" height="40" rx="10" fill="#0A4EA2"/><ellipse cx="20" cy="20" rx="12.5" ry="5.2" fill="none" stroke="#fff" stroke-width="2" opacity=".55" transform="rotate(-24 20 20)"/><path d="M14 26.5l4.4-13.4c.4-1.2 2.1-1.2 2.6 0L25.8 26.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M16.3 21.5h7.2" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
           </span>
-          <div class="st"><div class="sn">Amadeus</div><div class="sr">GDS &middot; fares, availability, reservations</div></div>
+          <div class="st"><div class="sn">Amadeus</div><div class="sr">GDS &middot; fares &amp; availability</div></div>
           <span class="light"></span>
         </div>
 
-        <div class="syscard" data-sys="ta">
-          <span class="badge">
-            <svg viewBox="0 0 40 40" width="38" height="38"><rect width="40" height="40" rx="10" fill="#0E7C86"/><circle cx="12" cy="14" r="2.6" fill="#fff"/><circle cx="28" cy="14" r="2.6" fill="#fff"/><circle cx="20" cy="27" r="2.6" fill="#fff"/><path d="M12 14h16M12 14l8 13M28 14l-8 13" stroke="#fff" stroke-width="1.9" opacity=".8"/></svg>
-          </span>
-          <div class="st"><div class="sn">TA Connections</div><div class="sr">Accommodation &amp; duty of care</div></div>
-          <span class="light"></span>
-        </div>
-
-        <div class="syscard" data-sys="levarti">
+        <div class="card" data-sys="levarti">
           <span class="badge">
             <svg viewBox="0 0 40 40" width="38" height="38"><defs><linearGradient id="levG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3AC7C7"/><stop offset="1" stop-color="#1478B4"/></linearGradient></defs><rect width="40" height="40" rx="10" fill="url(#levG)"/><path d="M11 27l6-14 3 8 3-5 6 11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </span>
@@ -227,50 +175,111 @@
           <span class="light"></span>
         </div>
 
-        <div class="syscard" data-sys="refunds">
+        <div class="card" data-sys="ta">
           <span class="badge">
-            <svg viewBox="0 0 40 40" width="38" height="38"><rect width="40" height="40" rx="10" fill="#5B4CC4"/><rect x="9" y="13" width="22" height="14" rx="2.6" fill="none" stroke="#fff" stroke-width="2.1"/><path d="M9 18h22" stroke="#fff" stroke-width="2.1"/><path d="M13 23.5h5" stroke="#fff" stroke-width="2.1" stroke-linecap="round"/></svg>
+            <svg viewBox="0 0 40 40" width="38" height="38"><rect width="40" height="40" rx="10" fill="#0E7C86"/><circle cx="12" cy="14" r="2.6" fill="#fff"/><circle cx="28" cy="14" r="2.6" fill="#fff"/><circle cx="20" cy="27" r="2.6" fill="#fff"/><path d="M12 14h16M12 14l8 13M28 14l-8 13" stroke="#fff" stroke-width="1.9" opacity=".8"/></svg>
           </span>
-          <div class="st"><div class="sn">Refunds &amp; Payments</div><div class="sr">Refunds, reimbursements &amp; vouchers</div></div>
+          <div class="st"><div class="sn">TA Connections</div><div class="sr">Accommodation &amp; duty of care</div></div>
+          <span class="light"></span>
+        </div>
+
+        <div class="card" data-sys="warehouse">
+          <span class="badge">
+            <svg viewBox="0 0 40 40" width="38" height="38"><rect width="40" height="40" rx="10" fill="#5B4CC4"/><ellipse cx="20" cy="13.5" rx="9" ry="3.4" fill="none" stroke="#fff" stroke-width="2"/><path d="M11 13.5v13c0 1.9 4 3.4 9 3.4s9-1.5 9-3.4v-13" fill="none" stroke="#fff" stroke-width="2"/><path d="M11 20c0 1.9 4 3.4 9 3.4s9-1.5 9-3.4" fill="none" stroke="#fff" stroke-width="2"/></svg>
+          </span>
+          <div class="st"><div class="sn">Data Warehouse</div><div class="sr">Snowflake &middot; BigQuery &middot; analytics</div></div>
+          <span class="light"></span>
+        </div>
+
+        <div class="card" data-sys="ada" style="border-color:var(--ej);background:#FFF8F2">
+          <span class="badge">
+            <svg viewBox="0 0 585 604" width="34" height="34"><path d="M292.5 0C131 0 0 131 0 292.5V604h585V292.5C585 131 454 0 292.5 0z" fill="#FF6600"/><circle cx="292.5" cy="240" r="115" fill="#fff"/><ellipse cx="292.5" cy="604" rx="138" ry="110" fill="#fff"/></svg>
+          </span>
+          <div class="st"><div class="sn">Ada</div><div class="sr">AI agent &middot; config &amp; conversations</div></div>
           <span class="light"></span>
         </div>
 
       </div>
     </div>
 
-    <!-- Ada hub -->
+    <!-- Arrow 1: MCP -->
+    <div class="arrow">
+      <div class="lbl">MCP</div>
+      <div class="line"></div>
+      <div class="sub">reads<br>your data</div>
+    </div>
+
+    <!-- Column 2: AI assistant -->
     <div class="hub-col">
-      <span class="mcp-note">&#8644; via MCP</span>
-      <div class="hub" id="hub">
-        <div class="orb"><span class="a">A</span></div>
-        <div class="hname">Ada</div>
-        <div class="htag">Airline AI agent</div>
-        <div class="doing" id="doing"><span class="think">Ready &mdash; press play to resolve a disruption</span></div>
-        <div class="assist">
-          <span class="av" style="background:#D97757">C</span>
-          <span class="av" style="background:#10A37F">G</span>
-          <span class="av" style="background:#2E7CF6">&#10022;</span>
+      <div class="col-h">Your AI assistant</div>
+      <div class="hub">
+        <div class="htag">Use Claude, ChatGPT or Copilot to query your systems and manage Ada &mdash; it reads your data and updates Ada&rsquo;s configuration.</div>
+        <div class="ai-row" id="aiRow">
+          <div class="ai-item">
+            <div class="ai-logo" data-ai="claude">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 13 170 136" width="34" height="34"><g transform="translate(-75.96,-223.53)"><path fill="#d97757" d="m 105.01,322.07 29.14,-16.35 0.49,-1.42 -0.49,-0.79 h -1.42 l -4.87,-0.3 -16.65,-0.45 -14.44,-0.6 -13.99,-0.75 -3.52,-0.75 -3.3,-4.35 0.34,-2.17 2.96,-1.99 4.24,0.37 9.37,0.64 14.06,0.97 10.2,0.6 15.11,1.57 h 2.4 l 0.34,-0.97 -0.82,-0.6 -0.64,-0.6 -14.55,-9.86 -15.75,-10.42 -8.25,-6 -4.46,-3.04 -2.25,-2.85 -0.97,-6.22 4.05,-4.46 5.44,0.37 1.39,0.37 5.51,4.24 11.77,9.11 15.37,11.32 2.25,1.87 0.9,-0.64 0.11,-0.45 -1.01,-1.69 -8.36,-15.11 -8.92,-15.37 -3.97,-6.37 -1.05,-3.82 c -0.37,-1.57 -0.64,-2.89 -0.64,-4.5 l 4.61,-6.26 2.55,-0.82 6.15,0.82 2.59,2.25 3.82,8.74 6.19,13.76 9.6,18.71 2.81,5.55 1.5,5.14 0.56,1.57 h 0.97 v -0.9 l 0.79,-10.54 1.46,-12.94 1.42,-16.65 0.49,-4.69 2.32,-5.62 4.61,-3.04 3.6,1.72 2.96,4.24 -0.41,2.74 -1.76,11.44 -3.45,17.92 -2.25,12 h 1.31 l 1.5,-1.5 6.07,-8.06 10.2,-12.75 4.5,-5.06 5.25,-5.59 3.37,-2.66 h 6.37 l 4.69,6.97 -2.1,7.2 -6.56,8.32 -5.44,7.05 -7.8,10.5 -4.87,8.4 0.45,0.67 1.16,-0.11 17.62,-3.75 9.52,-1.72 11.36,-1.95 5.14,2.4 0.56,2.44 -2.02,4.99 -12.15,3 -14.25,2.85 -21.22,5.02 -0.26,0.19 0.3,0.37 9.56,0.9 4.09,0.22 h 10.01 l 18.64,1.39 4.87,3.22 2.92,3.94 -0.49,3 -7.5,3.82 -10.12,-2.4 -23.62,-5.62 -8.1,-2.02 h -1.12 v 0.67 l 6.75,6.6 12.37,11.17 15.49,14.4 0.79,3.56 -1.99,2.81 -2.1,-0.3 -13.61,-10.24 -5.25,-4.61 -11.89,-10.01 h -0.79 v 1.05 l 2.74,4.01 14.47,21.75 0.75,6.67 -1.05,2.17 -3.75,1.31 -4.12,-0.75 -8.47,-11.89 -8.74,-13.39 -7.05,-12 -0.86,0.49 -4.16,44.81 -1.95,2.29 -4.5,1.72 -3.75,-2.85 -1.99,-4.61 1.99,-9.11 2.4,-11.89 1.95,-9.45 1.76,-11.74 1.05,-3.9 -0.07,-0.26 -0.86,0.11 -8.85,12.15 -13.46,18.19 -10.65,11.4 -2.55,1.01 -4.42,-2.29 0.41,-4.09 2.47,-3.64 14.74,-18.75 8.89,-11.62 5.74,-6.71 -0.04,-0.97 h -0.34 l -39.15,25.42 -6.97,0.9 -3,-2.81 0.37,-4.61 1.42,-1.5 11.77,-8.1 -0.04,0.04 z"/></g></svg>
+            </div>
+            <span class="ai-name">Claude</span>
+          </div>
+          <div class="ai-item">
+            <div class="ai-logo" data-ai="chatgpt">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2406 2406" width="34" height="34"><path d="M1 578.4C1 259.5 259.5 1 578.4 1h1249.1c319 0 577.5 258.5 577.5 577.4V2406H578.4C259.5 2406 1 2147.5 1 1828.6V578.4z" fill="#10A37F"/><path id="cgptA" d="M1107.3 299.1c-197.999 0-373.9 127.3-435.2 315.3L650 743.5v427.9c0 21.4 11 40.4 29.4 51.4l344.5 198.515V833.3h.1v-27.9L1372.7 604c33.715-19.52 70.44-32.857 108.47-39.828L1447.6 450.3C1361 353.5 1237.1 298.5 1107.3 299.1zm0 117.5-.6.6c79.699 0 156.3 27.5 217.6 78.4-2.5 1.2-7.4 4.3-11 6.1L952.8 709.3c-18.4 10.4-29.4 30-29.4 51.4V1248l-155.1-89.4V755.8c-.1-187.099 151.601-338.9 339-339.2z" fill="#fff"/><use xlink:href="#cgptA" transform="rotate(60 1203 1203)"/><use xlink:href="#cgptA" transform="rotate(120 1203 1203)"/><use xlink:href="#cgptA" transform="rotate(180 1203 1203)"/><use xlink:href="#cgptA" transform="rotate(240 1203 1203)"/><use xlink:href="#cgptA" transform="rotate(300 1203 1203)"/></svg>
+            </div>
+            <span class="ai-name">ChatGPT</span>
+          </div>
+          <div class="ai-item">
+            <div class="ai-logo" data-ai="copilot">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="34" height="34" fill="none"><path d="M34.1423 7.325C33.5634 5.354 31.7547 4 29.7003 4H28.3488C26.1142 4 24.1985 5.596 23.7952 7.794L21.4805 20.407 22.0549 18.442C22.6319 16.468 24.4419 15.111 26.4986 15.111H34.3524L37.6462 16.394 40.8213 15.111H39.8946C37.8401 15.111 36.0315 13.757 35.4525 11.786L34.1423 7.325Z" fill="url(#co_a)"/><path d="M14.3307 40.656C14.9032 42.637 16.7165 44 18.7783 44H21.6486C24.1592 44 26.2122 41.999 26.2767 39.489L26.5893 27.327 25.9354 29.56C25.3577 31.533 23.5481 32.889 21.4923 32.889H13.5732L10.7499 31.357 7.69336 32.889H8.60461C10.6663 32.889 12.4796 34.252 13.0521 36.233L14.3307 40.656Z" fill="url(#co_b)"/><path d="M29.4993 4H13.46C8.87732 4 6.12772 10.057 4.29466 16.113 2.12296 23.289-.718769 32.885 7.50252 32.885H14.4282C16.4978 32.885 18.3147 31.517 18.8835 29.527 20.0876 25.314 22.1978 17.966 23.8554 12.371 24.6977 9.528 25.3993 7.087 26.4762 5.566 27.0799 4.714 28.086 4 29.4993 4Z" fill="url(#co_c)"/><path d="M29.4993 4H13.46C8.87732 4 6.12772 10.057 4.29466 16.113 2.12296 23.289-.718769 32.885 7.50252 32.885H14.4282C16.4978 32.885 18.3147 31.517 18.8835 29.527 20.0876 25.314 22.1978 17.966 23.8554 12.371 24.6977 9.528 25.3993 7.087 26.4762 5.566 27.0799 4.714 28.086 4 29.4993 4Z" fill="url(#co_d)"/><path d="M18.498 44H34.5374C39.12 44 41.8696 37.942 43.7027 31.885 45.8744 24.708 48.7161 15.11 40.4948 15.11H33.5693C31.4996 15.11 29.6827 16.478 29.114 18.468 27.9098 22.682 25.7996 30.032 24.142 35.627 23.2996 38.471 22.598 40.913 21.5212 42.434 20.9175 43.286 19.9113 44 18.498 44Z" fill="url(#co_e)"/><path d="M18.498 44H34.5374C39.12 44 41.8696 37.942 43.7027 31.885 45.8744 24.708 48.7161 15.11 40.4948 15.11H33.5693C31.4996 15.11 29.6827 16.478 29.114 18.468 27.9098 22.682 25.7996 30.032 24.142 35.627 23.2996 38.471 22.598 40.913 21.5212 42.434 20.9175 43.286 19.9113 44 18.498 44Z" fill="url(#co_f)"/><defs><radialGradient id="co_a" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(38.005 20.514) rotate(-129.304) scale(17.303 16.271)"><stop offset=".096" stop-color="#00AEFF"/><stop offset=".773" stop-color="#2253CE"/><stop offset="1" stop-color="#0736C4"/></radialGradient><radialGradient id="co_b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.122 32.817) rotate(51.84) scale(15.991 15.512)"><stop offset="0" stop-color="#FFB657"/><stop offset=".634" stop-color="#FF5F3D"/><stop offset=".923" stop-color="#C02B3C"/></radialGradient><linearGradient id="co_c" x1="12.5" y1="7.5" x2="14.788" y2="33.975" gradientUnits="userSpaceOnUse"><stop offset=".156" stop-color="#0D91E1"/><stop offset=".487" stop-color="#52B471"/><stop offset=".652" stop-color="#98BD42"/><stop offset=".937" stop-color="#FFC800"/></linearGradient><linearGradient id="co_d" x1="14.5" y1="4" x2="15.75" y2="32.885" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#3DCBFF"/><stop offset=".247" stop-color="#0588F7" stop-opacity="0"/></linearGradient><radialGradient id="co_e" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(41.319 12.281) rotate(109.274) scale(38.387 45.987)"><stop offset=".066" stop-color="#8C48FF"/><stop offset=".5" stop-color="#F2598A"/><stop offset=".896" stop-color="#FFB152"/></radialGradient><linearGradient id="co_f" x1="42.586" y1="13.346" x2="42.57" y2="21.215" gradientUnits="userSpaceOnUse"><stop offset=".058" stop-color="#F8ADFA"/><stop offset=".708" stop-color="#A86EDD" stop-opacity="0"/></linearGradient></defs></svg>
+            </div>
+            <span class="ai-name">Copilot</span>
+          </div>
         </div>
-        <div class="al">Reasons with Claude, ChatGPT or Copilot</div>
+        <div class="doing" id="doing"><span class="think">Connected via MCP &mdash; reading systems, updating Ada</span></div>
       </div>
     </div>
 
-    <!-- Live console -->
-    <div class="console">
-      <div class="con-head">
-        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="ct">mcp-activity.log</span>
-        <span class="live"><span class="lg"></span>LIVE</span>
-      </div>
-      <div class="con-body" id="conBody">
-        <div class="req-pill">
-          <span class="lbl">Customer request</span>
-          Flight <b>EZY8021</b> to Barcelona was cancelled by the <b>ATC strike</b>. I must travel today, I&rsquo;ll need a <b>hotel tonight</b>, and a <b>refund</b> for my pre-paid airport train.
+    <!-- Arrow 2: Manages -->
+    <div class="arrow">
+      <div class="lbl">Manages</div>
+      <div class="line"></div>
+      <div class="sub">updates<br>Ada config</div>
+    </div>
+
+    <!-- Column 3: Ada configuration -->
+    <div>
+      <div class="col-h">Ada configuration</div>
+      <div class="col cfg-col" id="cfgCol">
+
+        <div class="card" data-cfg="playbooks">
+          <span class="badge">&#128216;</span>
+          <div class="st"><div class="sn">Playbooks</div><div class="sr">Conversation flows &mdash; ATC-strike rebooking, refunds, baggage</div></div>
+          <span class="light"></span>
         </div>
-      </div>
-      <div class="con-foot">
-        <div class="prog"><i id="prog"></i></div>
-        <button id="replay">&#9654; Play flow</button>
+
+        <div class="card" data-cfg="actions">
+          <span class="badge">&#9889;</span>
+          <div class="st"><div class="sn">Actions</div><div class="sr">API calls &amp; lookups &mdash; retrieve PNR, rebook, open expenses claim</div></div>
+          <span class="light"></span>
+        </div>
+
+        <div class="card" data-cfg="instructions">
+          <span class="badge">&#128221;</span>
+          <div class="st"><div class="sn">Custom Instructions</div><div class="sr">Tone, brand voice, EU261 / UK261 compliance guardrails</div></div>
+          <span class="light"></span>
+        </div>
+
+        <div class="card" data-cfg="knowledge">
+          <span class="badge">&#128218;</span>
+          <div class="st"><div class="sn">Knowledge Base</div><div class="sr">Help articles kept current &mdash; baggage, check-in, disruption</div></div>
+          <span class="light"></span>
+        </div>
+
+        <div class="card" data-cfg="simulations">
+          <span class="badge">&#129514;</span>
+          <div class="st"><div class="sn">Simulations</div><div class="sr">Test cases run before go-live</div></div>
+          <span class="light"></span>
+        </div>
+
       </div>
     </div>
 
@@ -280,25 +289,27 @@
   <div class="loop">
     <div class="licon"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg></div>
     <div class="ltext">
-      <div class="lh">One agent orchestrates every system &mdash; no swivel-chair, no human hand-off</div>
+      <div class="lh">Your AI assistant keeps Ada configured and current &mdash; no manual rebuilds</div>
       <div class="steps">
-        <span class="step">Read</span><span class="sep">&rarr;</span>
-        <span class="step">Reason</span><span class="sep">&rarr;</span>
-        <span class="step">Act across systems</span><span class="sep">&rarr;</span>
-        <span class="step">Resolve</span>
+        <span class="step">Connect</span><span class="sep">&rarr;</span>
+        <span class="step">Query</span><span class="sep">&rarr;</span>
+        <span class="step">Update</span><span class="sep">&rarr;</span>
+        <span class="step">Test</span>
       </div>
     </div>
   </div>
 
   <!-- channel footer -->
   <div class="chfoot">
-    <div class="cl">The same MCP-connected agent, deployed across every channel &mdash; one build, no rebuilding</div>
+    <div class="cl">One configuration, deployed across every channel &mdash; no rebuilding</div>
     <div class="chstrip">
       <div class="ci">&#127760; Web</div>
-      <div class="ci">&#128241; App</div>
-      <div class="ci">&#128172; WhatsApp</div>
+      <div class="ci">&#128172; Chat</div>
       <div class="ci">&#9993;&#65039; Email</div>
+      <div class="ci">&#128241; SMS</div>
+      <div class="ci">&#128241; WhatsApp</div>
       <div class="ci">&#128222; Voice</div>
+      <div class="ci">&#128241; App</div>
     </div>
   </div>
 
@@ -306,138 +317,56 @@
 
 <script>
 (function(){
-  var demo=document.getElementById('demo'),
-      wires=document.getElementById('wires'),
-      hub=document.getElementById('hub'),
-      doing=document.getElementById('doing'),
-      conBody=document.getElementById('conBody'),
-      prog=document.getElementById('prog'),
-      replay=document.getElementById('replay');
-  var svgns='http://www.w3.org/2000/svg';
+  var doing=document.getElementById('doing');
+  var sysCards={}, cfgCards={}, aiLogos={};
+  document.querySelectorAll('.sys-col .card').forEach(function(c){ sysCards[c.dataset.sys]=c; });
+  document.querySelectorAll('.cfg-col .card').forEach(function(c){ cfgCards[c.dataset.cfg]=c; });
+  document.querySelectorAll('.ai-logo').forEach(function(l){ aiLogos[l.dataset.ai]=l; });
 
-  var sysCards={};
-  document.querySelectorAll('.syscard').forEach(function(c){ sysCards[c.dataset.sys]=c; });
-
+  // Each step: assistant reads a system, then updates an Ada config artifact.
   var steps=[
-    {sys:'dynamics', chip:'Dynamics 365', think:'Pull the customer profile and open the disruption case',
-     call:'crm.getCustomerProfile("QK7T2M")', res:'Richard Kirk &middot; easyJet Plus &middot; case DR-4471 opened'},
-    {sys:'sabre', chip:'Sabre', think:'Retrieve the booking and confirm the cancellation',
-     call:'sabre.retrievePNR("QK7T2M")', res:'EZY8021 LGW&rarr;BCN &middot; status CANCELLED (ATC strike)'},
-    {sys:'amadeus', chip:'Amadeus', think:'Search the fastest re-route to Barcelona today',
-     call:'amadeus.searchAvailability("LON","BCN","today")', res:'EZY2981 &middot; 18:10 LGW&rarr;BCN &middot; seats available'},
-    {sys:'sabre', chip:'Sabre', think:'Rebook onto the next flight at no extra cost',
-     call:'sabre.rebookSegment("EZY2981")', res:'ticket re-issued &middot; no change fee &middot; confirmed'},
-    {sys:'ta', chip:'TA Connections', think:'Arrange duty-of-care hotel and meals for tonight',
-     call:'taConnections.bookAccommodation("BCN",1)', res:'hotel + meal voucher &middot; ref TA-88231'},
-    {sys:'levarti', chip:'Levarti', think:'Log the re-accommodation on the servicing record',
-     call:'levarti.updateDisruptionCase("DR-4471")', res:'re-accommodation logged &middot; passenger notified'},
-    {sys:'refunds', chip:'Refunds', think:'Refund the pre-paid airport train as duty of care',
-     call:'payments.openRefund(38,"EUR","prepaid-train")', res:'refund approved &middot; back to original card'}
+    {ai:'claude',  sys:'levarti',   cfg:'playbooks',    say:'Reading Levarti disruption data &mdash; updating the ATC-strike rebooking playbook'},
+    {ai:'chatgpt', sys:'sabre',     cfg:'actions',      say:'Checking Sabre PNR schema &mdash; wiring the retrieve-PNR &amp; rebook actions'},
+    {ai:'copilot', sys:'dynamics',  cfg:'knowledge',    say:'Reading Dynamics 365 cases &mdash; refreshing baggage &amp; check-in knowledge'},
+    {ai:'claude',  sys:'warehouse', cfg:'instructions', say:'Querying the data warehouse &mdash; tuning EU261 / UK261 compliance guardrails'},
+    {ai:'chatgpt', sys:'amadeus',   cfg:'simulations',  say:'Pulling Amadeus fares &mdash; generating simulations to test before go-live'}
   ];
 
-  var wireByCard={}, dot=null;
-  function buildWires(){
-    while(wires.firstChild) wires.removeChild(wires.firstChild);
-    wireByCard={}; dot=null;
-    if(window.innerWidth<=960) return;
-    var dr=demo.getBoundingClientRect();
-    var hb=hub.getBoundingClientRect();
-    var hx=hb.left-dr.left, hy=hb.top-dr.top+hb.height/2;
-    wires.setAttribute('viewBox','0 0 '+dr.width+' '+dr.height);
-    Object.keys(sysCards).forEach(function(key){
-      var cb=sysCards[key].getBoundingClientRect();
-      var cx=cb.right-dr.left, cy=cb.top-dr.top+cb.height/2;
-      var mx=(cx+hx)/2;
-      var d='M '+cx+' '+cy+' C '+mx+' '+cy+' '+mx+' '+hy+' '+hx+' '+hy;
-      var p=document.createElementNS(svgns,'path');
-      p.setAttribute('d',d); p.setAttribute('class','wire');
-      wires.appendChild(p);
-      if(!wireByCard[key]) wireByCard[key]=[];
-      wireByCard[key]=p; // last card wins for duplicate sys, but each sys unique here
-    });
-    dot=document.createElementNS(svgns,'circle');
-    dot.setAttribute('r','4.5'); dot.setAttribute('class','wdot'); dot.setAttribute('opacity','0');
-    wires.appendChild(dot);
-  }
-
-  function animateDot(sys,reverse,dur){
-    return new Promise(function(resolve){
-      var p=wireByCard[sys];
-      if(!p||!dot){ setTimeout(resolve,dur); return; }
-      var len=p.getTotalLength(), start=null;
-      function frame(ts){
-        if(start===null) start=ts;
-        var t=Math.min(1,(ts-start)/dur);
-        var d=reverse ? (1-t)*len : t*len;
-        var pt=p.getPointAtLength(d);
-        dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y);
-        dot.setAttribute('opacity', t<0.08 ? (t/0.08) : (t>0.9 ? (1-t)/0.1 : 1));
-        if(t<1) requestAnimationFrame(frame); else { dot.setAttribute('opacity','0'); resolve(); }
-      }
-      requestAnimationFrame(frame);
-    });
-  }
-
   function wait(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
-  function scrollC(){ conBody.scrollTop=conBody.scrollHeight; }
 
-  function addLine(html,cls){
-    var d=document.createElement('div');
-    d.className='cline '+cls;
-    d.innerHTML=html;
-    conBody.appendChild(d);
-    requestAnimationFrame(function(){ d.classList.add('show'); scrollC(); });
-    return d;
+  function clearAll(){
+    Object.keys(sysCards).forEach(function(k){ if(k!=='ada') sysCards[k].classList.remove('active','updated'); });
+    Object.keys(cfgCards).forEach(function(k){ cfgCards[k].classList.remove('active','updated'); });
+    Object.keys(aiLogos).forEach(function(k){ aiLogos[k].classList.remove('lit'); });
   }
 
-  var running=false;
-  function reset(){
-    Object.keys(sysCards).forEach(function(k){ sysCards[k].classList.remove('active','done'); });
-    conBody.querySelectorAll('.cline,.resolve').forEach(function(n){ n.remove(); });
-    doing.innerHTML='<span class="think">Ready &mdash; press play to resolve a disruption</span>';
-    prog.style.width='0%';
-  }
-
-  async function run(){
-    if(running) return;
-    running=true; replay.disabled=true; replay.style.opacity=.6;
-    reset();
-    buildWires();
-    await wait(400);
+  async function loop(){
     for(var i=0;i<steps.length;i++){
       var s=steps[i];
-      doing.innerHTML='<span class="think">'+s.think+'&hellip;</span>';
-      addLine(s.think, 'cthink');
-      await wait(430);
+      clearAll();
+      aiLogos[s.ai].classList.add('lit');
+      doing.innerHTML='<span class="think">'+s.say+'&hellip;</span>';
       sysCards[s.sys].classList.add('active');
-      addLine('<span class="chip">'+s.chip+'</span><span class="arw">&rarr;</span> '+s.call, 'creq');
-      await animateDot(s.sys, true, 520);   // Ada -> system (request)
-      await wait(120);
-      await animateDot(s.sys, false, 520);  // system -> Ada (response)
+      await wait(1100);
       sysCards[s.sys].classList.remove('active');
-      sysCards[s.sys].classList.add('done');
-      addLine(s.res+' <span class="via">// via MCP</span>', 'cres');
-      prog.style.width=Math.round(((i+1)/steps.length)*100)+'%';
-      await wait(360);
+      sysCards[s.sys].classList.add('updated');
+      cfgCards[s.cfg].classList.add('active');
+      await wait(1100);
+      cfgCards[s.cfg].classList.remove('active');
+      cfgCards[s.cfg].classList.add('updated');
+      await wait(700);
     }
-    doing.innerHTML='<span style="font-weight:700">Resolved &mdash; 0 human agents</span>';
-    var r=document.createElement('div');
-    r.className='resolve';
-    r.innerHTML='<div class="rh"><span class="ck">&#10003;</span>Disruption resolved end-to-end</div>'+
-      '<div class="rs">Rebooked to Barcelona today, hotel &amp; meals arranged, servicing record updated and the train refund approved &mdash; orchestrated across every system through MCP.</div>'+
-      '<div class="stats"><div class="stat"><div class="n">6</div><div class="l">SYSTEMS</div></div>'+
-      '<div class="stat"><div class="n">7</div><div class="l">MCP CALLS</div></div>'+
-      '<div class="stat"><div class="n">0</div><div class="l">HAND-OFFS</div></div></div>';
-    conBody.appendChild(r);
-    requestAnimationFrame(function(){ r.classList.add('show'); scrollC(); });
-    running=false; replay.disabled=false; replay.style.opacity=1;
-    replay.innerHTML='&#8635; Replay flow';
+    clearAll();
+    doing.innerHTML='<span style="font-weight:700">Ada updated &mdash; playbooks, actions, knowledge &amp; sims current</span>';
+    await wait(1900);
   }
 
-  replay.onclick=run;
-  window.addEventListener('resize',function(){ if(!running) buildWires(); });
-  window.addEventListener('load',function(){ buildWires(); setTimeout(run,700); });
-  buildWires();
+  async function run(){ while(true){ await loop(); } }
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    doing.innerHTML='<span class="think">Reads your systems &middot; updates Ada&rsquo;s configuration</span>';
+  } else {
+    window.addEventListener('load',function(){ setTimeout(run,600); });
+  }
 })();
 </script>
 </body>

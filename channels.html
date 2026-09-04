@@ -322,10 +322,6 @@
       <div class="ms-ico t-x"><svg viewBox="0 0 24 24" fill="#fff"><path d="M17.5 3h3l-6.6 7.5L21.8 21h-6l-4.7-6.1L5.7 21H2.6l7-8L2.6 3h6.1l4.2 5.6L17.5 3zm-1 16h1.7L7.6 4.8H5.8L16.5 19z"/></svg></div>
       <div class="ms-tt"><div class="n">X (Twitter)</div><div class="d">Direct Messages</div></div>
     </div>
-    <div class="ms-item" data-ch="imsg" onclick="select('imsg')">
-      <div class="ms-ico t-imsg"><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 3C6.9 3 2.8 6.3 2.8 10.4c0 2.3 1.3 4.4 3.4 5.8-.2 1.2-.9 2.6-1.7 3.5 1.5-.2 3.3-.8 4.6-1.7 1 .3 2 .4 3 .4 5.1 0 9.2-3.3 9.2-7.5S17.1 3 12 3z"/></svg></div>
-      <div class="ms-tt"><div class="n">Apple Messages</div><div class="d">iMessage · Business Chat</div></div>
-    </div>
     <div class="ms-item" data-ch="voice" onclick="select('voice')">
       <div class="ms-ico t-voice"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
       <div class="ms-tt"><div class="n">Voice</div><div class="d">Inbound phone · Ada Voice</div></div>
@@ -587,25 +583,6 @@
         </div>
       </div>
 
-      <!-- ===== APPLE MESSAGES ===== -->
-      <div class="ms-panel imsg" data-ch="imsg">
-        <div class="cw">
-          <div class="cw-head"><div class="cw-av"><span class="e" style="font-family:'Baloo 2';font-weight:800;font-size:18px;color:var(--ej)">e</span></div><div class="cw-ht"><div class="n">easyJet</div><div class="s">iMessage · Business Chat</div></div></div>
-          <div class="cw-body">
-            <div class="cw-date">Today 10:07</div>
-            <div class="b out">Need to change my flight to Edinburgh from Friday to Sunday — how much will it cost?<span class="tm">10:07</span></div>
-            <div class="b in">Happy to help you move it. 🛫 Can you confirm your booking reference?<span class="tm">10:07</span></div>
-            <div class="b out">DV5NQK<span class="tm">10:08</span></div>
-            <div class="sys">🔎 Checking fares · EZY63 LTN → EDI</div>
-            <div class="b in">Found it — <b>EZY63, Luton → Edinburgh, Friday</b>. Moving you to the equivalent <b>Sunday 08:20</b> service would be:<span class="tm">10:08</span></div>
-            <div class="b in">💷 Flight change fee <b>£29</b> + fare difference <b>£14</b> = <b>£43 total</b>. Your seat and hold bag carry across. Would you like me to make the change?<span class="tm">10:08</span></div>
-            <div class="b out">Yes go ahead<span class="tm">10:09</span></div>
-            <div class="b in">Done ✅ You're now booked on <b>Sunday's 08:20 to Edinburgh</b>, seat 14C. Confirmation and new boarding pass sent to your email. Enjoy Edinburgh! 🏴󠁧󠁢󠁳󠁣󠁴󠁿<span class="tm">10:09</span></div>
-          </div>
-          <div class="cw-input"><div class="box">iMessage</div><div class="snd"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div></div>
-        </div>
-      </div>
-
       <!-- ===== VOICE ===== -->
       <div class="ms-panel voice" data-ch="voice">
         <div class="cw">
@@ -659,7 +636,6 @@
     messenger:{name:"Facebook Messenger", tag:"Meta · a parent and child re-seated together at no charge"},
     instagram:{name:"Instagram", tag:"Instagram Direct · a cabin baggage allowance question"},
     x:{name:"X (Twitter)", tag:"X Direct Messages · a delayed flight, care vouchers and UK261 rights explained"},
-    imsg:{name:"Apple Messages", tag:"iMessage Business Chat · a flight changed to a later date, priced and confirmed"},
     voice:{name:"Voice", tag:"Inbound phone · an overnight cancellation rebooked, empathetic warm handoff to the disruption team"}
   };
   function select(ch){

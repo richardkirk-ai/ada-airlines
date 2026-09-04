@@ -672,7 +672,7 @@
   audio.addEventListener('play',applySpeed);
 
   audio.addEventListener('loadedmetadata',function(){hasAudio=true;totTimeEl.textContent=fmt(audio.duration);playerStatus.textContent='Recording loaded — press play, then S to sync';});
-  if(audio.getAttribute('src') && audio.getAttribute('src').indexOf('data:')===0){hasAudio=true;}
+  if(audio.getAttribute('src')){hasAudio=true; totTimeEl.textContent=fmt(DEMO_DURATION); playerStatus.textContent='Recording ready — press play';}
 
   var wfWrap=document.querySelector('.wf-wrap'),scrubbing=false;
   function seek(ev){var r=wfWrap.getBoundingClientRect();var p=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width));

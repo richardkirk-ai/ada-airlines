@@ -232,8 +232,8 @@
   #syncBanner.on{opacity:1;}
   #syncBanner b{color:#fff;text-decoration:underline;}
 
-  /* shared easyJet site tab-bar — lifted above the footer player */
-  .site-tabs{position:fixed;left:24px;bottom:132px;z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10);font-family:'Inter',system-ui,sans-serif}
+  /* shared easyJet site tab-bar — placed in a clean band just under the header (avoids the footer + caption) */
+  .site-tabs{position:fixed;top:82px;left:50%;transform:translateX(-50%);z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10);font-family:'Inter',system-ui,sans-serif}
   .site-tabs a{font-size:12.5px;font-weight:600;color:#6B5A50;text-decoration:none;padding:7px 14px;border-radius:999px;line-height:1;white-space:nowrap;transition:background .15s,color .15s}
   .site-tabs a:hover{background:#FFF1E6;color:var(--brand-2)}
   .site-tabs a.on{background:var(--brand);color:#fff}

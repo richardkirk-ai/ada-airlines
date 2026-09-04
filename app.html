@@ -324,7 +324,7 @@ window.adaSettings = {
   var GREETING = "Hi Richard 👋 I'm the easyJet Assistant, powered by Ada. I can help with bookings, disruptions, baggage, check-in and more. How can I help?";
   var GREETING_RX = /^(hi|hello|hey|welcome|thanks for (calling|contacting)|good (morning|afternoon|evening))/i;
 
-  var started=false, adaReady=false, typingEl=null, renderedIds={}, awaiting=false, watchdog=null, pendingFirst=null;
+  var started=false, adaReady=false, typingEl=null, renderedIds={}, awaiting=false, watchdog=null, pendingFirst=null, botStarted=false;
 
   function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function mdToHtml(md){
@@ -380,8 +380,11 @@ window.adaSettings = {
     if(!m || m.role==='user') return;
     if(m.id){ if(renderedIds[m.id]) return; renderedIds[m.id]=1; }
     var b=(m.body||'').trim(); if(!b) return;
-    if(GREETING_RX.test(b)) return;   // we show our own branded greeting
+    // ANY real bot message clears the wait/watchdog so we never falsely time out
     awaiting=false; clearTimeout(watchdog);
+    // Suppress only the bot's OWN opening greeting (we already show a branded one);
+    // never drop later replies even if they start with a greeting word.
+    if(!botStarted){ botStarted=true; if(GREETING_RX.test(b)) return; }
     addBot(b);
   }
 
@@ -413,7 +416,7 @@ window.adaSettings = {
     addUser(text); showTyping();
     awaiting=true; clearTimeout(watchdog);
     watchdog=setTimeout(function(){ if(!awaiting) return; awaiting=false; hideTyping();
-      addBot("I'm having a little trouble connecting right now — please try again in a moment. 🙏"); }, 24000);
+      addBot("I'm having a little trouble connecting right now — please try again in a moment. 🙏"); }, 35000);
     if(window.adaEmbed && window.adaEmbed.sendMessage){
       window.adaEmbed.sendMessage(text).catch(function(){ awaiting=false; clearTimeout(watchdog); hideTyping();
         addBot("I had trouble sending that — please try again in a moment."); });

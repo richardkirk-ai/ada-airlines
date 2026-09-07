@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>easyJet × Ada · Phase 2 Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ej:#FF6600; --ej-dark:#E85D04; --ej-deep:#243746;
+    --page:#EBEEF2; --card:#FFFFFF; --ink:#16202A; --muted:#697586; --line:#E4E8EE;
+    --green:#129E5E; --green-soft:#E7F6EE;
+    --shadow:0 18px 50px rgba(20,30,45,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{min-height:100%}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--page);color:var(--ink);line-height:1.5}
+  .wm{font-family:'Baloo 2',sans-serif}
+  @keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ── Topbar ── */
+  .topbar{background:var(--ej);position:sticky;top:0;z-index:40}
+  .topbar-in{max-width:1240px;margin:0 auto;height:62px;display:flex;align-items:center;gap:13px;padding:0 26px}
+  .topbar .brand{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:27px;letter-spacing:-.5px;color:#fff;line-height:1;user-select:none}
+  .topbar .crumb{color:rgba(255,255,255,.82);font-size:14px;font-weight:500;border-left:1px solid rgba(255,255,255,.34);padding-left:13px}
+  .topbar .spacer{flex:1}
+  .topbar .util{color:#fff;font-size:13px;font-weight:600;opacity:.92;display:flex;gap:18px;align-items:center}
+  @media (max-width:720px){ .topbar .util{display:none} }
+
+  .wrap{max-width:1240px;margin:0 auto;padding:36px 26px 120px}
+
+  /* ── Hero ── */
+  .hero{text-align:center;margin-bottom:26px}
+  .hero .eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:var(--ej);margin-bottom:11px}
+  .hero h1{font-family:'Baloo 2',sans-serif;font-size:clamp(26px,3.6vw,38px);font-weight:700;color:var(--ej-deep);letter-spacing:-.5px;line-height:1.1}
+  .hero h1 .thin{font-weight:400;color:var(--ink)}
+  .hero p{font-size:16px;color:#46525E;max-width:760px;margin:14px auto 0;line-height:1.55}
+
+  /* ── stat strip ── */
+  .stats{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:0 auto 34px;max-width:820px}
+  .stat{flex:1 1 320px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:15px;box-shadow:0 3px 12px rgba(20,30,45,.05)}
+  .stat .big{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--ej);line-height:1;flex:0 0 auto}
+  .stat .sc{font-size:12.5px;color:#46525E;line-height:1.4}
+  .stat .sc b{color:var(--ink)}
+
+  /* ── tags / status pills ── */
+  .tag{font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap;line-height:1.2;display:inline-block}
+  .tag-phase{background:var(--ej);color:#fff}
+  .tag-built{background:var(--ej-deep);color:#fff}
+  .tag-live{background:var(--green-soft);color:var(--green)}
+  .tag-legacy{background:#EDEFF3;color:var(--muted)}
+  .tag-build{background:#FFF1DE;color:#B26B00}
+
+  /* ── diagram grid ── */
+  .diagram{display:grid;grid-template-columns:1fr auto 1fr auto 1.02fr auto 1.18fr;gap:0;align-items:stretch}
+  .colwrap{display:flex;flex-direction:column;min-width:0}
+  .col-h{text-align:center;margin-bottom:13px;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px}
+  .col-h .ct{font-size:11.5px;font-weight:800;letter-spacing:.9px;text-transform:uppercase;color:var(--muted)}
+  .col{display:flex;flex-direction:column;gap:9px;flex:1}
+
+  /* generic card */
+  .card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:11px;box-shadow:0 3px 12px rgba(20,30,45,.05);position:relative}
+  .card .badge{width:36px;height:36px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;font-size:19px}
+  .card .st{min-width:0;flex:1}
+  .card .sn{font-size:13px;font-weight:700;color:var(--ink);line-height:1.15}
+  .card .sr{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.3}
+  .card .cardtag{position:absolute;top:-7px;right:9px}
+
+  .col-note{font-size:11.5px;color:#46525E;line-height:1.45;margin-top:11px;padding:0 4px;text-align:center}
+
+  /* ── Ada hub ── */
+  .ada{background:linear-gradient(165deg,var(--ej) 0%,var(--ej-dark) 100%);border-radius:20px;padding:15px 14px;color:#fff;box-shadow:0 18px 44px rgba(232,93,4,.28);position:relative;flex:1;display:flex;flex-direction:column;gap:8px}
+  .ada::after{content:"";position:absolute;inset:-3px;border-radius:20px;border:2px solid rgba(255,102,0,.20);animation:halo 2.8s ease-in-out infinite;pointer-events:none}
+  @keyframes halo{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:0;transform:scale(1.04)}}
+  .cap{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:11px;padding:9px 11px;display:flex;gap:9px;align-items:flex-start}
+  .cap .ci{flex:0 0 auto;font-size:15px;line-height:1.2;width:20px;text-align:center}
+  .cap .cn{font-size:12.5px;font-weight:700;color:#fff;line-height:1.2}
+  .cap .cd{font-size:10.5px;color:#FFE9D8;line-height:1.35;margin-top:2px}
+
+  /* ── MCP gateway ── */
+  .gateway{background:#fff;border:2px solid var(--ej-deep);border-radius:16px;padding:13px 13px 14px;box-shadow:0 14px 34px rgba(36,55,70,.16);flex:1;display:flex;flex-direction:column;position:relative}
+  .gateway .gh{font-size:12.5px;font-weight:800;color:var(--ej-deep);text-align:center;line-height:1.25}
+  .gateway .gsub{font-size:10.5px;color:var(--muted);text-align:center;margin:4px 0 11px;line-height:1.35}
+  .tools{display:flex;flex-direction:column;gap:6px}
+  .tool{font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:11px;background:#F4F6F8;border:1px solid var(--line);border-radius:8px;padding:6px 9px;color:var(--ej-deep);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tool b{color:var(--ej-dark);font-weight:700}
+  .gateway .gfoot{font-size:10px;color:var(--muted);text-align:center;margin-top:11px;line-height:1.35;border-top:1px dashed var(--line);padding-top:9px}
+
+  /* ── systems: recessed legacy tier ── */
+  .behind{margin-top:10px;background:#F5F7F9;border:1px dashed #C9D2DC;border-radius:13px;padding:10px 10px 11px}
+  .behind .bh{font-size:9.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);text-align:center;margin-bottom:8px}
+  .behind .card{box-shadow:none;background:#fff}
+  .behind .bnote{font-size:10.5px;color:#46525E;line-height:1.4;margin-top:9px;text-align:center}
+
+  /* ── arrows ── */
+  .arrow{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 14px;gap:5px;align-self:center}
+  .arrow .lbl{font-size:9.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--ej)}
+  .arrow .line{width:56px;height:2px;background:linear-gradient(90deg,rgba(255,102,0,.22),rgba(255,102,0,.9),rgba(255,102,0,.22));position:relative;border-radius:2px}
+  .arrow .line::after{content:'▶';position:absolute;right:-8px;top:50%;transform:translateY(-50%);font-size:9px;color:var(--ej)}
+  .arrow .line .pulse{position:absolute;top:50%;width:7px;height:7px;border-radius:50%;background:var(--ej);transform:translateY(-50%);box-shadow:0 0 8px 1px rgba(255,102,0,.8);animation:travel 2.7s linear infinite}
+  .arrow.a1 .line .pulse{animation-delay:0s}
+  .arrow.a2 .line .pulse{animation-delay:.7s}
+  .arrow.a3 .line .pulse{animation-delay:1.4s}
+  @keyframes travel{0%{left:-3px;opacity:0}12%{opacity:1}80%{opacity:1}100%{left:100%;opacity:0}}
+  .arrow .sub{font-size:9px;color:var(--muted);text-align:center;line-height:1.3}
+
+  /* ── phase band ── */
+  .phases{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:44px}
+  .phase{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;position:relative}
+  .phase .pnum{font-size:10px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+  .phase .pt{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:17px;color:var(--ej-deep);margin:3px 0 6px}
+  .phase .pd{font-size:12.5px;color:#46525E;line-height:1.45}
+  .phase.done{border-color:#BFE7D2}
+  .phase.done .pnum{color:var(--green)}
+  .phase.now{border-color:var(--ej);border-width:2px;background:#FFF8F2;box-shadow:0 10px 28px rgba(255,102,0,.14)}
+  .phase.now .pnum{color:var(--ej)}
+  .phase.next{opacity:.62}
+  .phase .pchip{position:absolute;top:13px;right:14px}
+
+  /* ── walkthrough ── */
+  .walk{margin-top:40px}
+  .walk .wtitle{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:19px;color:var(--ej-deep);margin-bottom:6px}
+  .walk .wsub{font-size:13px;color:var(--muted);margin-bottom:16px}
+  .wstep{display:flex;gap:15px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--line)}
+  .wstep .wn{flex:0 0 auto;width:28px;height:28px;border-radius:50%;background:var(--ej);color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .wstep .wt{font-size:14px;color:#2A3540;line-height:1.5;padding-top:2px}
+  .wstep .wt b{color:var(--ink)}
+
+  /* ── source line ── */
+  .source{margin-top:34px;background:linear-gradient(90deg,#FFF3E9,#fff);border:1px solid #FFE0C4;border-radius:14px;padding:15px 18px}
+  .source .sh{font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ej-dark);margin-bottom:6px}
+  .source .sb{font-size:12.5px;color:#46525E;line-height:1.55}
+  .source .sb b{color:var(--ink)}
+  .source .attr{font-size:10.5px;color:var(--muted);margin-top:7px;font-style:italic}
+
+  /* ── responsive ── */
+  @media (max-width:960px){
+    .diagram{grid-template-columns:1fr}
+    .col-h{min-height:0;margin-top:22px}
+    .arrow{padding:12px 0;flex-direction:row;gap:10px}
+    .arrow .line{width:2px;height:34px;background:linear-gradient(180deg,rgba(255,102,0,.22),rgba(255,102,0,.9),rgba(255,102,0,.22))}
+    .arrow .line::after{content:'▼';right:50%;top:auto;bottom:-9px;transform:translateX(50%)}
+    .arrow .line .pulse{animation:travelV 2.7s linear infinite;left:50%;transform:translateX(-50%)}
+    @keyframes travelV{0%{top:-3px;opacity:0}12%{opacity:1}80%{opacity:1}100%{top:100%;opacity:0}}
+    .phases{grid-template-columns:1fr}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .arrow .line .pulse{display:none}
+    .ada::after{animation:none;opacity:.4}
+  }
+
+  /* ── shared easyJet bottom tab-bar ── */
+  .site-tabs{position:fixed;left:18px;bottom:18px;z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10);font-family:'Inter',system-ui,sans-serif}
+  .site-tabs a{font-size:12.5px;font-weight:600;color:#6B5A50;text-decoration:none;padding:7px 14px;border-radius:999px;line-height:1;white-space:nowrap;transition:background .15s,color .15s}
+  .site-tabs a:hover{background:#FFF1E6;color:var(--ej-dark)}
+  .site-tabs a.on{background:var(--ej);color:#fff}
+  @media (max-width:720px){ .site-tabs{left:50%;transform:translateX(-50%);bottom:10px} .site-tabs a{padding:7px 11px} }
+</style>
+</head>
+<body>
+
+<nav class="site-tabs" aria-label="Demo channels">
+  <a href="app.html">App</a>
+  <a href="index.html">Web</a>
+  <a href="voice.html">Voice</a>
+  <a href="channels.html">Channels</a>
+  <a href="mcp.html">MCP</a>
+  <a href="architecture.html" class="on">Architecture</a>
+</nav>
+
+<header class="topbar"><div class="topbar-in">
+  <span class="brand wm">easyJet</span>
+  <span class="crumb">&times; Ada &middot; Phase 2 Architecture</span>
+  <span class="spacer"></span>
+  <span class="util"><span>Disruption &middot; conversational layer</span></span>
+</div></header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="eyebrow">Phase 2 &middot; Act</div>
+    <h1>The conversational layer <span class="thin">on top of easyJet&rsquo;s own systems</span></h1>
+    <p>When a flight is disrupted, Ada answers the entitlement question with the customer&rsquo;s real state &mdash; then completes the recovery task by calling easyJet&rsquo;s own MCP tools. It never touches legacy systems directly.</p>
+  </div>
+
+  <!-- stat strip -->
+  <div class="stats">
+    <div class="stat">
+      <div class="big">36%</div>
+      <div class="sc"><b>&ldquo;What am I entitled to claim?&rdquo;</b> &mdash; share of contacts on easyJet&rsquo;s second-busiest contact day ever (Fri 29 Aug 2026). The answer is in the FAQs; in an emotional moment, people want validation.</div>
+    </div>
+    <div class="stat">
+      <div class="big">1 in 5</div>
+      <div class="sc"><b>disrupted customers score easyJet 1&ndash;2 / 10</b> on CSAT. With premiumisation on the board&rsquo;s agenda, disruption is now a board-level problem.</div>
+    </div>
+  </div>
+
+  <!-- ── 4-column diagram ── -->
+  <div class="diagram" id="diagram">
+
+    <!-- Column 1: Customer channels -->
+    <div class="colwrap">
+      <div class="col-h"><span class="ct">Channel of choice</span></div>
+      <div class="col">
+        <div class="card">
+          <span class="badge" style="background:#FFF1E6">&#128241;</span>
+          <div class="st"><div class="sn">easyJet app</div><div class="sr">In-app, native &middot; visual flow</div></div>
+        </div>
+        <div class="card">
+          <span class="badge" style="background:#FFF1E6">&#128172;</span>
+          <div class="st"><div class="sn">Web chat</div><div class="sr">easyjet.com help &middot; 98% of bookings are web</div></div>
+        </div>
+        <div class="card">
+          <span class="badge" style="background:#FFF1E6">&#128222;</span>
+          <div class="st"><div class="sn">Voice / IVR</div><div class="sr">Spoken, natural language</div></div>
+        </div>
+        <div class="card" style="padding:9px 12px">
+          <span class="badge" style="background:#F4F6F8;font-size:15px">&#9993;&#65039;</span>
+          <div class="st"><div class="sn" style="font-size:12px">Email &middot; WhatsApp</div><div class="sr">Secondary &middot; same agent</div></div>
+        </div>
+      </div>
+      <div class="col-note">One agent, one set of knowledge, every channel. No new platform for the customer to learn.</div>
+    </div>
+
+    <!-- Arrow 1 -->
+    <div class="arrow a1">
+      <div class="lbl">Contact</div>
+      <div class="line"><span class="pulse"></span></div>
+      <div class="sub">any<br>channel</div>
+    </div>
+
+    <!-- Column 2: Ada -->
+    <div class="colwrap">
+      <div class="col-h"><span class="ct">Ada AI agent</span><span class="tag tag-phase">Phase 2</span></div>
+      <div class="ada">
+        <div class="cap">
+          <span class="ci">&#129504;</span>
+          <div><div class="cn">Reasoning &amp; conversation</div><div class="cd">Context-aware &mdash; knows the customer is disrupted before they explain</div></div>
+        </div>
+        <div class="cap">
+          <span class="ci">&#128218;</span>
+          <div><div class="cn">Knowledge</div><div class="cd">EU261 compensation &amp; welfare, receipt limits, hotel &amp; transfer policy, claim timelines</div></div>
+        </div>
+        <div class="cap">
+          <span class="ci">&#9889;</span>
+          <div><div class="cn">Actions</div><div class="cd">Calls easyJet&rsquo;s tools to read state and take action</div></div>
+        </div>
+        <div class="cap">
+          <span class="ci">&#129309;</span>
+          <div><div class="cn">Handoff</div><div class="cd">Escalates to a human in Dynamics with full context</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arrow 2 -->
+    <div class="arrow a2">
+      <div class="lbl">Calls tools</div>
+      <div class="line"><span class="pulse"></span></div>
+      <div class="sub">read<br>+ act</div>
+    </div>
+
+    <!-- Column 3: easyJet MCP layer -->
+    <div class="colwrap">
+      <div class="col-h"><span class="ct">easyJet MCP layer</span><span class="tag tag-built">Built by easyJet</span></div>
+      <div class="gateway">
+        <div class="gh">The single gateway</div>
+        <div class="gsub">Every Ada action passes through it. easyJet owns the contract &amp; guardrails.</div>
+        <div class="tools">
+          <div class="tool"><b>get_disruption_status</b>(pnr)</div>
+          <div class="tool"><b>get_entitlements</b>(pnr)</div>
+          <div class="tool"><b>get_hotel_booking</b>(pnr)</div>
+          <div class="tool"><b>get_rebook_options</b>(pnr)</div>
+          <div class="tool"><b>issue_voucher</b>(pnr)</div>
+          <div class="tool"><b>create_eu261_claim</b>(pnr)</div>
+        </div>
+        <div class="gfoot">Ada consumes these tools &mdash; it never reaches into a system of record itself.</div>
+      </div>
+    </div>
+
+    <!-- Arrow 3 -->
+    <div class="arrow a3">
+      <div class="lbl">Executes</div>
+      <div class="line"><span class="pulse"></span></div>
+      <div class="sub">into systems<br>of record</div>
+    </div>
+
+    <!-- Column 4: Systems of record -->
+    <div class="colwrap">
+      <div class="col-h"><span class="ct">Existing easyJet systems</span></div>
+      <div class="col">
+        <div class="card">
+          <span class="cardtag tag tag-live">Live today</span>
+          <span class="badge" style="background:#E4F5F5">&#128737;&#65039;</span>
+          <div class="st"><div class="sn">Levarti / MAX Vision</div><div class="sr">Passenger disruption experience &middot; TA Connections</div></div>
+        </div>
+        <div class="card">
+          <span class="cardtag tag tag-live">Live today</span>
+          <span class="badge" style="background:#E4F5F5">&#127976;</span>
+          <div class="st"><div class="sn">TA Disruption Hub + Ticketing Switch</div><div class="sr">Hotels, re-ticketing, refunds &middot; TA Connections</div></div>
+        </div>
+        <div class="card">
+          <span class="cardtag tag tag-live">Live today</span>
+          <span class="badge" style="background:#E9F0FB">&#128188;</span>
+          <div class="st"><div class="sn">Microsoft Dynamics 365 CaaS</div><div class="sr">Customer, case &amp; agent desktop</div></div>
+        </div>
+
+        <div class="behind">
+          <div class="bh">easyJet&rsquo;s own stack &mdash; Ada never touches directly</div>
+          <div class="card">
+            <span class="cardtag tag tag-legacy">Legacy</span>
+            <span class="badge" style="background:#EDEFF3">&#128421;&#65039;</span>
+            <div class="st"><div class="sn">eRes</div><div class="sr">In-house PSS &middot; bookings, PNRs, inventory</div></div>
+          </div>
+          <div class="card" style="margin-top:9px">
+            <span class="cardtag tag tag-build">In build</span>
+            <span class="badge" style="background:#FFF1DE">&#9881;&#65039;</span>
+            <div class="st"><div class="sn">Auto-IROP API</div><div class="sr">Automated irregular-operations handling</div></div>
+          </div>
+          <div class="bnote">Levarti &amp; the Disruption Hub reach through to <b>eRes</b> and out to <b>GDS / other carriers</b> for re-ticketing &mdash; inside easyJet&rsquo;s own stack.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /diagram -->
+
+  <!-- phase band -->
+  <div class="phases">
+    <div class="phase done">
+      <span class="pchip tag tag-live">Done</span>
+      <div class="pnum">Phase 1</div>
+      <div class="pt">Answer</div>
+      <div class="pd">Entitlement &amp; welfare questions answered from knowledge. No integration required &mdash; deflects the wasted contacts.</div>
+    </div>
+    <div class="phase now">
+      <span class="pchip tag tag-phase">This diagram</span>
+      <div class="pnum">Phase 2</div>
+      <div class="pt">Act</div>
+      <div class="pd">Ada becomes the conversational layer on top of Levarti. It reads the real disruption state, answers with actual entitlements, then completes the task &mdash; confirm or book the hotel, rebook the flight, issue the voucher, open the EU261 claim.</div>
+    </div>
+    <div class="phase next">
+      <span class="pchip tag tag-legacy">Horizon</span>
+      <div class="pnum">Phase 3</div>
+      <div class="pt">Anticipate</div>
+      <div class="pd">Proactive outreach &mdash; ops detects disruption and Ada reaches out before the customer contacts easyJet. Lands once the Auto-IROP API is written.</div>
+    </div>
+  </div>
+
+  <!-- walkthrough -->
+  <div class="walk">
+    <div class="wtitle">One disrupted passenger, end to end</div>
+    <div class="wsub">Flight EZY LGW&rarr;BCN cancelled &middot; best man at a wedding tomorrow</div>
+    <div class="wstep">
+      <div class="wn">1</div>
+      <div class="wt"><b>Nothing to explain.</b> Flight LGW&rarr;BCN is cancelled and the customer opens the app. Ada already knows the flight, the PNR and the disruption reason.</div>
+    </div>
+    <div class="wstep">
+      <div class="wn">2</div>
+      <div class="wt"><b>&ldquo;Will you pay for my hotel?&rdquo;</b> Ada answers with <i>this</i> customer&rsquo;s entitlement &mdash; not a link to an FAQ: covered costs, receipt limits, claim timeline.</div>
+    </div>
+    <div class="wstep">
+      <div class="wn">3</div>
+      <div class="wt"><b>Ada completes it.</b> One call through the MCP layer into Levarti / the Disruption Hub: hotel confirmed, rebooking options offered, EU261 claim opened.</div>
+    </div>
+    <div class="wstep">
+      <div class="wn">4</div>
+      <div class="wt"><b>Judgement stays human.</b> Welfare edge cases &mdash; unaccompanied minor, medical need &mdash; escalate to a Dynamics agent with the full transcript and context attached.</div>
+    </div>
+  </div>
+
+  <!-- source line -->
+  <div class="source">
+    <div class="sh">Why the fulfilment engine is already there</div>
+    <div class="sb">TA Connections at easyJet, live since February 2023: <b>&pound;14M</b> projected first-year saving &middot; <b>74%</b> of refunds auto-processed &middot; <b>80%</b> of passengers self-serving against a 55% target &middot; <b>44,000+</b> self-service hotel bookings. The engine and its APIs exist &mdash; the gap is an authoritative answer on entitlements <i>before</i> the customer reaches fulfilment. That is the gap Ada fills.</div>
+    <div class="attr">Figures: TA Connections published case study.</div>
+  </div>
+
+</div>
+
+</body>
+</html>

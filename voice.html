@@ -201,8 +201,9 @@
   .burst{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 70% 45%,rgba(13,124,63,.13),transparent 55%);opacity:0;transition:opacity .5s;}
   .burst.on{opacity:1;}
 
-  /* caption */
-  .caption-bar{position:absolute;left:30px;right:30px;bottom:124px;display:flex;justify-content:center;pointer-events:none;z-index:4;}
+  /* caption — left inset clears the bottom-left menu pill so the transcript never encroaches on it */
+  .caption-bar{position:absolute;left:430px;right:30px;bottom:124px;display:flex;justify-content:center;pointer-events:none;z-index:4;}
+  @media (max-width:720px){ .caption-bar{left:30px;bottom:176px;} }
   .caption{max-width:1240px;background:rgba(36,55,70,.94);color:#fff;padding:10px 18px;border-radius:12px;font-size:14px;line-height:1.4;box-shadow:0 8px 30px rgba(0,0,0,.18);opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;}
   .caption.on{opacity:1;transform:none;}
   .caption .who{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.65;margin-right:9px;}

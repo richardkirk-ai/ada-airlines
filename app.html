@@ -322,7 +322,7 @@ window.adaSettings = {
 </script>
 
 <script>
-  var GREETING = "Hi Richard 👋 I'm the easyJet Assistant, powered by Ada. I can help with bookings, disruptions, baggage, check-in and more. How can I help?";
+  var GREETING = "Hi Richard 👋 I'm the easyJet Assistant. I can help with bookings, disruptions, baggage, check-in and more. How can I help?";
   var GREETING_RX = /^(hi|hello|hey|welcome|thanks for (calling|contacting)|good (morning|afternoon|evening))/i;
 
   var started=false, adaReady=false, typingEl=null, renderedIds={}, awaiting=false, watchdog=null, pendingFirst=null, botStarted=false;
@@ -398,7 +398,7 @@ window.adaSettings = {
       started=true;
       setTimeout(function(){
         addBot(GREETING);
-        setChips(['My flight to Barcelona','Baggage allowance','Change my flight']);
+        setChips([]);
         if(prefill) setTimeout(function(){ sendMsg(prefill); }, 500);
       }, 300);
     } else if(prefill){ sendMsg(prefill); }

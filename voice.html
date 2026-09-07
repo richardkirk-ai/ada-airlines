@@ -231,11 +231,13 @@
   #syncBanner.on{opacity:1;}
   #syncBanner b{color:#fff;text-decoration:underline;}
 
-  /* shared easyJet site tab-bar — placed in a clean band just under the header (avoids the footer + caption) */
-  .site-tabs{position:fixed;top:82px;left:50%;transform:translateX(-50%);z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10);font-family:'Inter',system-ui,sans-serif}
+  /* shared easyJet site tab-bar — bottom-left floating pill, matching every other page.
+     Sits just above the footer player so it never overlaps the transcript or the caption. */
+  .site-tabs{position:fixed;left:18px;bottom:132px;z-index:120;display:flex;gap:2px;background:#fff;border:1px solid #FFD9BF;border-radius:999px;padding:4px;box-shadow:0 8px 24px rgba(255,102,0,.16),0 2px 8px rgba(20,30,45,.10);font-family:'Inter',system-ui,sans-serif}
   .site-tabs a{font-size:12.5px;font-weight:600;color:#6B5A50;text-decoration:none;padding:7px 14px;border-radius:999px;line-height:1;white-space:nowrap;transition:background .15s,color .15s}
   .site-tabs a:hover{background:#FFF1E6;color:var(--brand-2)}
   .site-tabs a.on{background:var(--brand);color:#fff}
+  @media (max-width:720px){ .site-tabs{left:50%;transform:translateX(-50%);bottom:126px} .site-tabs a{padding:7px 11px} }
 </style>
 </head>
 <body>
@@ -653,9 +655,12 @@
   var BAR_COUNT=90, waveform=document.getElementById('waveform'), bars=[];
   for(var b=0;b<BAR_COUNT;b++){var bar=document.createElement('div');bar.className='bar';waveform.appendChild(bar);bars.push(bar);}
   var audioCtx,analyser,freq,sourceNode;
-  function initAudio(){if(audioCtx||!hasAudio)return;if(location.protocol==='file:')return;try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();
-    sourceNode=audioCtx.createMediaElementSource(audio);analyser=audioCtx.createAnalyser();analyser.fftSize=256;analyser.smoothingTimeConstant=0.72;
-    freq=new Uint8Array(analyser.frequencyBinCount);sourceNode.connect(analyser);analyser.connect(audioCtx.destination);}catch(e){}}
+  /* The call recording plays natively through the <audio> element for guaranteed sound in
+     every browser. We deliberately do NOT route it through createMediaElementSource(): that
+     reroutes the element's output into the Web Audio graph, and if any step after it throws
+     (silently caught), the audio keeps "playing" with no sound. The waveform is animated
+     synthetically in tick() instead — no analyser needed. */
+  function initAudio(){/* intentionally a no-op — see note above */}
 
   function play(){if(hasAudio){initAudio();if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();audio.play();}else{if(vt>=dur())vt=0;}setPlaying(true);}
   function pause(){if(hasAudio)audio.pause();setPlaying(false);}

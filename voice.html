@@ -353,12 +353,12 @@
               </div>
               <div class="fnote"><span class="fno">EZY3115</span> · London Luton → Barcelona · arrives 22:55</div>
             </div>
-            <div class="frow" id="fltGatwick">
+            <div class="frow" id="fltStansted">
               <div class="frow-top">
                 <span class="froute">18:10 <span class="apt">LGW</span><span class="arr">→</span>21:20 <span class="apt">BCN</span></span>
                 <span class="fbadge" id="gatwickBadge">Option 2</span>
               </div>
-              <div class="fnote"><span class="fno">EZY2981</span> · London Gatwick → Barcelona · arrives 21:20 — in time for the rehearsal dinner</div>
+              <div class="fnote"><span class="fno">EZY2981</span> · London Stansted → Barcelona · arrives 21:20 — in time for the rehearsal dinner</div>
             </div>
           </div>
 
@@ -377,7 +377,7 @@
               <span class="cb-badge">✓</span>
               <div>
                 <div class="cb-title">Rebooked — EZY2981</div>
-                <div class="cb-sub">London Gatwick 18:10 → Barcelona 21:20 · no change fee · same fare class</div>
+                <div class="cb-sub">London Stansted 18:10 → Barcelona 21:20 · no change fee · same fare class</div>
                 <span class="cb-chip">📧 New confirmation & boarding pass sent</span>
               </div>
             </div>
@@ -415,7 +415,7 @@
 
   /* 1) TRANSCRIPT — from Ada conversation 6a9aac84c4a1d1d6ec2fbca6.
         t = seconds into the call (message onsets from the conversation segments).
-        Flight numbers re-skinned FR->EZY and the chosen airport shown as Gatwick
+        Flight numbers re-skinned FR->EZY and the chosen airport shown as Stansted
         for easyJet brand consistency with the Web tab. */
   var TRANSCRIPT = [
     { t:1.38,   role:'ai',   text:"Hi Richard, I'm easyJet's AI assistant. I see that your upcoming flight to Barcelona has been cancelled. Are you calling about this flight?" },
@@ -425,11 +425,11 @@
     { t:38.77,  role:'ai',   text:"I'll find the fastest way to get you to Barcelona. Your options are to rebook onto the next available flight at no extra cost, receive a full refund if you'd prefer to make your own arrangements, or be rerouted via a different airline if that gets you there sooner." },
     { t:53.90,  role:'ai',   text:"Which option would you prefer: rebook onto another flight, receive a refund, or be rerouted via a different airline?" },
     { t:62.46,  role:'user', text:"Let's rebook another flight, please." },
-    { t:67.33,  role:'ai',   text:"The best rebooking options are: option one, this evening at 7:45 PM from London Luton, arriving in Barcelona at 10:55 PM. Option two, a little earlier at 6:10 PM from London Gatwick, arriving at 9:20 PM, if getting there sooner matters more than flying from the original airport." },
-    { t:85.88,  role:'ai',   text:"Which flight would you like: the 7:45 PM departure from Luton, or the 6:10 PM departure from Gatwick?" },
-    { t:95.44,  role:'user', text:"Let's do the 6:10 from Gatwick — that would let me get to the rehearsal dinner tonight." },
+    { t:67.33,  role:'ai',   text:"The best rebooking options are: option one, this evening at 7:45 PM from London Luton, arriving in Barcelona at 10:55 PM. Option two, a little earlier at 6:10 PM from London Stansted, arriving at 9:20 PM, if getting there sooner matters more than flying from the original airport." },
+    { t:85.88,  role:'ai',   text:"Which flight would you like: the 7:45 PM departure from Luton, or the 6:10 PM departure from Stansted?" },
+    { t:95.44,  role:'user', text:"Let's do the 6:10 from Stansted — that would let me get to the rehearsal dinner tonight." },
     { t:105.53, role:'ai',   text:"Before I confirm, one thing worth flagging: because this cancellation is caused by an air traffic control strike, you won't receive a cash compensation payment under EU261. That's because air traffic control action is treated as outside the airline's control, which falls under what's called extraordinary circumstances. You're still entitled to the free rebooking we're doing right now, and if you end up needing meals or overnight accommodation because of a long delay, that's covered too." },
-    { t:134.67, role:'ai',   text:"You've been rebooked onto flight EZY2981 from London Gatwick to Barcelona, departing at 6:10 PM and arriving at 9:20 PM. There's no change fee, and your fare class remains the same. I'm sending the new confirmation and updated boarding pass to the email on file now, along with a note about the air traffic control strike duty-of-care policy." },
+    { t:134.67, role:'ai',   text:"You've been rebooked onto flight EZY2981 from London Stansted to Barcelona, departing at 6:10 PM and arriving at 9:20 PM. There's no change fee, and your fare class remains the same. I'm sending the new confirmation and updated boarding pass to the email on file now, along with a note about the air traffic control strike duty-of-care policy." },
     { t:157.38, role:'ai',   text:"Thank you, and congratulations on the wedding. Is there anything else I can help with today?" },
     { t:162.39, role:'user', text:"No, that's been great. Thank you." },
     { t:167.59, role:'ai',   text:"Would you like me to send you a quick survey by text message to rate your experience today?" },
@@ -461,10 +461,10 @@
     {type:'step',key:'s_options',lvl:0,parts:[{kw:'SEND'},{text:'Present 3 options: rebook / refund / reroute'}]},
     {type:'step',key:'a_resolution',lvl:0,parts:[{kw:'ASK'},{var:'resolution_choice'},{text:'[rebook · refund · reroute]'}]},
     {type:'step',key:'s_flights',lvl:0,parts:[{kw:'SEND'},{text:'Present 2 rebooking flights'}]},
-    {type:'step',key:'a_flight',lvl:0,parts:[{kw:'ASK'},{var:'flight_choice'},{text:'[gatwick_1810 · luton_1945]'}]},
+    {type:'step',key:'a_flight',lvl:0,parts:[{kw:'ASK'},{var:'flight_choice'},{text:'[stansted_1810 · luton_1945]'}]},
     {type:'step',key:'s_eu261',lvl:0,parts:[{kw:'SEND'},{text:'EU261 rights — no cash comp, duty of care'}]},
-    {type:'step',key:'if_gatwick',lvl:0,parts:[{kw:'IF'},{var:'flight_choice'},{text:'= gatwick_1810'}]},
-    {type:'step',key:'s_confirm',lvl:1,parts:[{kw:'SEND'},{text:'Confirm'},{action:'EZY2981 · Gatwick 18:10'}]},
+    {type:'step',key:'if_gatwick',lvl:0,parts:[{kw:'IF'},{var:'flight_choice'},{text:'= stansted_1810'}]},
+    {type:'step',key:'s_confirm',lvl:1,parts:[{kw:'SEND'},{text:'Confirm'},{action:'EZY2981 · Stansted 18:10'}]},
     {type:'step',key:'else_luton',lvl:0,parts:[{kw:'ELSE'},{text:'= luton_1945'}]},
     {type:'step',key:'s_confirm_luton',lvl:1,parts:[{kw:'SEND'},{text:'Confirm Luton 19:45 flight'}]},
     {type:'step',key:'s_close',lvl:0,parts:[{kw:'SEND'},{text:'Warm close · offer further help'}]}
@@ -496,7 +496,7 @@
     ENG.scanStart = L[6];      // network search begins
     ENG.scanEnd   = L[7];      // narrowed to the options presented
     ENG.flights   = L[7];
-    ENG.flightPick= L[9];      // caller picks Gatwick
+    ENG.flightPick= L[9];      // caller picks Stansted
     ENG.eu261     = L[10];
     ENG.confirmed = L[11];
     ENG.searchA=L[2];  ENG.searchAEnd=L[3];        // "Assessing disruption"
@@ -558,7 +558,7 @@
       optRefund=document.getElementById('optRefund'), optReroute=document.getElementById('optReroute');
   var scanBlock=document.getElementById('scanBlock');
   var fltBlock=document.getElementById('fltBlock'), fltLuton=document.getElementById('fltLuton'),
-      fltGatwick=document.getElementById('fltGatwick'), lutonBadge=document.getElementById('lutonBadge'),
+      fltStansted=document.getElementById('fltStansted'), lutonBadge=document.getElementById('lutonBadge'),
       gatwickBadge=document.getElementById('gatwickBadge');
   var euBlock=document.getElementById('euBlock'), confirmBlock=document.getElementById('confirmBlock');
   var pTitle=document.getElementById('pTitle'), pSub=document.getElementById('pSub');
@@ -613,7 +613,7 @@
 
     newlyShown=reveal(fltBlock, t>=ENG.flights)||newlyShown;
     var picked=t>=ENG.flightPick;
-    fltGatwick.classList.toggle('best',picked);
+    fltStansted.classList.toggle('best',picked);
     fltLuton.classList.toggle('ruled',picked);
     gatwickBadge.textContent=picked?'Selected ✓':'Option 2';
     lutonBadge.textContent=picked?'Not selected':'Option 1';
@@ -635,9 +635,9 @@
     else if(t<ENG.resolve)    phase('Presenting options','Rebook · refund · reroute');
     else if(t<ENG.flights)    phase('Searching the network','Every flight that could get you there in time');
     else if(t<ENG.flightPick) phase('Choose a flight','Two options to Barcelona today');
-    else if(t<ENG.eu261)      phase('Gatwick <em>18:10</em> selected','Fastest to the rehearsal dinner');
+    else if(t<ENG.eu261)      phase('Stansted <em>18:10</em> selected','Fastest to the rehearsal dinner');
     else if(t<ENG.confirmed)  phase('EU261 · extraordinary circumstances','Free rebooking · duty of care');
-    else if(t<LINE_TIMES[12]) phase('Rebooked <em>✓ EZY2981</em>','Gatwick 18:10 → Barcelona 21:20');
+    else if(t<LINE_TIMES[12]) phase('Rebooked <em>✓ EZY2981</em>','Stansted 18:10 → Barcelona 21:20');
     else                      phase('Rebooked <em>✓ EZY2981</em>','Boarding pass sent · congratulations!');
   }
 
